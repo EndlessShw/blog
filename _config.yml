@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: EndlessShw's blog
+title: EndlessShw's 博客
 subtitle: 'Welcome! Doctor!'
 description: '学!'
 keywords: Java Cyberspace-Security
@@ -96,7 +96,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: hexo-theme-matery
+theme: fluid
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
