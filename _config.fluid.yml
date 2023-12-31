@@ -740,7 +740,7 @@ post:
 # Based on GitHub Issues
 # See: https://utteranc.es
 utterances:
-  repo: "https://github.com/EndlessShw/blog"
+  repo: "EndlessShw/blog"
   issue_term: pathname
   label: Comment
   theme: github-light
