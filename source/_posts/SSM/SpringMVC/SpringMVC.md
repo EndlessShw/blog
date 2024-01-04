@@ -26,7 +26,7 @@ tags:
 
 1. 数据提交的优化
 2. 简化返回处理
-    <img src="SpringMVC.assets/image-20230228193259225.png" alt="image-20230228193259225" style="zoom:150%;" />
+    ![](image-20230228193259225.png)
 
 ### 4. SpringMVC 的执行流程
 
