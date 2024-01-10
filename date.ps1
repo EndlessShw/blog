@@ -62,7 +62,7 @@ Get-ChildItem -Path "./source/_posts" -recurse *.md | ForEach-Object -Process{
         $dateUpdated = git log -1 --format='%ct' $filepath
         $dateUpdated = Convert-FromUnixDate $dateUpdated
         $dateUpdated = $dateUpdated.ToString("yyyy-MM-dd HH:mm:ss");
-        $newUpdated = "updated: " + $dateUpdated;
+        $newUpdated = "date: " + $dateUpdated;
 
         #Write-Host("newUpdated: " + $newUpdated)
 
