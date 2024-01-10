@@ -1,4 +1,4 @@
----
+﻿---
 title: WebLogic
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 - WebLogic
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # WebLogic 中间件漏洞
 
 ## 1. CVE-2017-3506 XMLDecoder 反序列化漏洞（版本：12.1.3.0）

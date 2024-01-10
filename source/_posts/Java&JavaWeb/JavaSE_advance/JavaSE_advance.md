@@ -1,11 +1,13 @@
----
+﻿---
 title: JavaSE_Advance
 categories:
 - Java&JavaWeb
 - JavaSE_Advance
 tags:
 - Back end
+updated: 2024-01-04 20:24:53
 ---
+
 # JavaSE 进阶的知识
 
 ## 1. Collection 集合

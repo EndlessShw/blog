@@ -1,11 +1,13 @@
----
+﻿---
 title: c++
 categories:
 - C++
 - Basic principle
 tags:
 - C++
+updated: 2024-01-04 20:24:53
 ---
+
 ## C++ 语法
 
 ### 1. 输入数据

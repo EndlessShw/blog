@@ -1,4 +1,4 @@
----
+﻿---
 title: JNDI-Injection
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 - JNDI_Injection
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # JNDI 注入
 
 ## 1. JNDI 的知识

@@ -1,11 +1,13 @@
----
+﻿---
 title: RecyclerView
 categories:
 - Android
 - Basic principle
 tags:
 - Android
+updated: 2024-01-04 20:24:53
 ---
+
 # RecyclerView
 
 ## 1. 构件眉目菜单，为后面展现各种不同的样式

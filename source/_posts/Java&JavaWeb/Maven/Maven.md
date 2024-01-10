@@ -1,11 +1,13 @@
----
+﻿---
 title: Maven
 categories:
 - Java&JavaWeb
 - Maven
 tags:
 - Back end
+updated: 2024-01-04 20:24:53
 ---
+
 # Maven(http://heavy_code_industry.gitee.io/code_heavy_industry/pro002-maven/)
 
 ## 1. Maven 介绍

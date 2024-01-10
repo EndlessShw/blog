@@ -1,11 +1,13 @@
----
+﻿---
 title: Android_NFC
 categories:
 - Android
 - NFC
 tags:
 - NFC
+updated: 2024-01-04 20:24:53
 ---
+
 # NDEF数据的操作
 
 - 从NFC标签读取NDEF格式的数据

@@ -1,4 +1,4 @@
----
+﻿---
 title: Memory_Trojan_Java
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 - Memory_Trojan_Java
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # Java 内存马
 
 ## 1. 基于 Servlet API 相关的 JSP 动态注册内存马（版本 Tomcat 8.5.78）

@@ -1,4 +1,4 @@
----
+﻿---
 title: XXE
 categories:
 - Network_Security
@@ -6,7 +6,9 @@ categories:
 - XXE
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # XXE 实体注入
 
 ## 1. 使用条件

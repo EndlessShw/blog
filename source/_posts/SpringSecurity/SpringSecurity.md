@@ -1,11 +1,13 @@
----
+﻿---
 title: SpringSecurity
 categories:
 - Back end
 - SpringSecurity
 tags:
 - Back end
+updated: 2024-01-04 20:24:53
 ---
+
 # SpringSecurity从入门到精通
 
 ## 课程介绍

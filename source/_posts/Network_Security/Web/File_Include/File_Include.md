@@ -1,4 +1,4 @@
----
+﻿---
 title: 文件包含漏洞
 categories:
 - Network_Security
@@ -6,7 +6,9 @@ categories:
 - File_Include
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # 文件包含漏洞（PHP）
 
 ## 1. 漏洞产生原理

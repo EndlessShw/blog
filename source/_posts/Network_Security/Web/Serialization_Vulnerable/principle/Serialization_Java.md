@@ -1,4 +1,4 @@
----
+﻿---
 title: Serialization-Java
 categories:
 - Network_Security
@@ -8,7 +8,9 @@ categories:
 - Java
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # Java 的序列化和反序列化
 
 ## 1. Java 序列化的基本原理

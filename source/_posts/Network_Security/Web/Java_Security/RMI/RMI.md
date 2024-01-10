@@ -1,4 +1,4 @@
----
+﻿---
 title: RMI
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 - RMI
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # RMI 反序列化漏洞
 
 ## 1. RMI 基本原理

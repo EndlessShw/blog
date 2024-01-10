@@ -1,4 +1,4 @@
----
+﻿---
 title: Chapter1_Medium_Socnet
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 tags:
 - Network_Security
 - Vulnhub
+updated: 2024-01-09 16:04:47
 ---
+
 
 # Socnet 打靶学习记录（考研痛苦后的第一篇复健）
 

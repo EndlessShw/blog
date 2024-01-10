@@ -1,4 +1,4 @@
----
+﻿---
 title: XSS
 categories:
 - Network_Security
@@ -6,7 +6,9 @@ categories:
 - XSS
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # XSS
 
 ## 1. 概念

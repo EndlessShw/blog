@@ -1,4 +1,4 @@
----
+﻿---
 title: Serialization-PHP
 categories:
 - Network_Security
@@ -8,7 +8,9 @@ categories:
 - PHP
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # 序列化漏洞
 
 ## 1. 序列化介绍

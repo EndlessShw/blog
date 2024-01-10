@@ -1,11 +1,13 @@
----
+﻿---
 title: Android_Service
 categories:
 - Android
 - Basic principle
 tags:
 - Android
+updated: 2024-01-04 20:24:53
 ---
+
 # 1. 什么是服务
 
 1. 服务是长期于后台运行的程序，首先它是一个组件，用于执行长期运行的任务，并且与用户没有交互。每一个服务都需要在配置文件 AndroidManifest.xml 文件里面进行申明。

@@ -1,4 +1,4 @@
----
+﻿---
 title: Serialization-fastjson
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 - Fastjson
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # Fastjson 的反序列化漏洞
 
 ## 1. 漏洞探测

@@ -1,11 +1,13 @@
----
+﻿---
 title: mybatis
 categories:
 - Back end
 - SSM
 tags:
 - Back end
+updated: 2024-01-04 20:24:53
 ---
+
 # MyBatis 框架
 
 ## 1. MyBatis 概述

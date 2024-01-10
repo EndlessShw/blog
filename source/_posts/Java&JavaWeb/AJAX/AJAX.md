@@ -1,11 +1,13 @@
----
+﻿---
 title: AJAX
 categories:
 - Java&JavaWeb
 - AJAX
 tags:
 - Back end
+updated: 2024-01-04 20:24:53
 ---
+
 ## AJAX(Asynchronous JavaScript And XML)
 
 ### 1. AJAX 概述

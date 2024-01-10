@@ -1,6 +1,8 @@
----
+﻿---
 title: Kerberos
+updated: 2024-01-04 20:24:53
 ---
+
 # Kerberos 相关内容
 
 ## 1. Windows 本地认证

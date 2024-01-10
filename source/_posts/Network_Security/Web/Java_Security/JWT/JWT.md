@@ -1,4 +1,4 @@
----
+﻿---
 title: JWT
 categories:
 - Network_Security
@@ -7,7 +7,9 @@ categories:
 - JWT
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # JWT 认证漏洞
 
 ## 1. 签名为空的漏洞 CVE-2015-9235

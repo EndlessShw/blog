@@ -1,4 +1,4 @@
----
+﻿---
 title: RCE-Java
 categories:
 - Network_Security
@@ -6,7 +6,9 @@ categories:
 - RCE-Java
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # RCE-Java
 
 ## 1. `exec()` 执行系统命令

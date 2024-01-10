@@ -1,4 +1,4 @@
----
+﻿---
 title: SSRF-Java
 categories:
 - Network_Security
@@ -6,7 +6,9 @@ categories:
 - SSRF
 tags:
 - Network_Security
+updated: 2024-01-04 20:24:53
 ---
+
 # SSRF 代码审计 - Java 篇
 
 ## 1. SSRF 介绍
