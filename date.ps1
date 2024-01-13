@@ -43,7 +43,7 @@ Get-ChildItem -Path "./source/_posts" -recurse *.md | ForEach-Object -Process{
             if ($temp -match "---") {
                 $yamlStartEndNum = $yamlStartEndNum + 1;
             }
-            if ($readeachline.Contains("updated:")) {
+            if ($readeachline.Contains("date:")) {
                 $existUpdated = $true;
                 $updatedNum = $lineNum;
             }

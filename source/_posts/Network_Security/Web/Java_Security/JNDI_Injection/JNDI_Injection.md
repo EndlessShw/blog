@@ -7,7 +7,7 @@ categories:
 - JNDI_Injection
 tags:
 - Network_Security
-date: 2024-01-10 13:49:48
+date: 2024-01-10 14:00:32
 ---
 
 # JNDI 注入
