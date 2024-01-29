@@ -7,7 +7,7 @@ categories:
 tags:
 - Network_Security
 - Vulnhub
-date: 2024-01-23 15:27:14
+date: 2024-01-23 19:47:55
 ---
 
 # AdmX_New 靶场学习
