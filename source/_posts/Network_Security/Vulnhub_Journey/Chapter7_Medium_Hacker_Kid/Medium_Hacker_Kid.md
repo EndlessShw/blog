@@ -7,7 +7,7 @@ categories:
 tags:
 - Network_Security
 - Vulnhub
-date: 2024-04-05 13:25:22
+date: 2024-04-05 13:32:28
 ---
 
 # Hacker_Kid 靶机学习记录
