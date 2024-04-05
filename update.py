@@ -46,7 +46,6 @@ def update(filePath):
 
 
 def main():
-    print("请将脚本放置在 hexo 根目录")
     rootPath = os.path.join(os.getcwd(), r"source\_posts")
     # rootPath = os.getcwd()
     # 遍历所有文件的头部
