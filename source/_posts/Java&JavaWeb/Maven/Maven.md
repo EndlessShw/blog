@@ -1,13 +1,3 @@
-﻿---
-title: Maven
-categories:
-- Java&JavaWeb
-- Maven
-tags:
-- Back end
-date: 2024-04-05 13:32:28
----
-
 # Maven(http://heavy_code_industry.gitee.io/code_heavy_industry/pro002-maven/)
 
 ## 1. Maven 介绍
@@ -37,12 +27,12 @@ date: 2024-04-05 13:32:28
         2. 部署 war 包：借助相关 Maven 插件（例如 cargo），将 war 包部署到 Tomcat 服务器上
     8. 通过 IDEA war 打包后，会生成 `out` 文件夹，该文件夹内就有打包后的 war 包。
 2. 对于服务器，没有 IDE 时（脱离本地开发环境），就需要 Maven 来将程序构建、打包和部署：
-    ![images](img010.74e515e5.png)
+    ![images](Maven/img010.74e515e5.png)
 
 ### 3. Maven 工作机制
 
 1. 总体图：
-    ![./images](img003.f9cc536c.png)
+    ![./images](Maven/img003.f9cc536c.png)
 2. 以后创建工程项目可以创建 Maven 工程，然后可以工程之间也可以有依赖关系并进行总体管理。
 3. Maven 仓库有三种 jar 包，如图所示。
 
@@ -149,7 +139,7 @@ date: 2024-04-05 13:32:28
 
 6. 用命令生成 maven 工程
     `mvn archetype:generate`。
-    ![images](img008.be45c9ad.png)
+    ![images](Maven/img008.be45c9ad.png)
 
 7. 创建工程过程中需要指定的参数：
     ```bash
@@ -234,7 +224,7 @@ date: 2024-04-05 13:32:28
     POM 表示将项目抽象为一个模型，再用程序中的对象来描述这个模型。这样就可以用程序来管理项目了。在开发过程中，最基本的做法就是将现实生活中的事物抽象为模型，然后封装模型相关的数据作为一个对象，这样就可以在程序中计算与现实事物相关的数据。
     所以体现该思想的表现就是 pom.xml 项目核心配置文件。
 
-4. 约定的目录结构（在超级 pom 中配置）![./images](img011.621b1ac3.png)
+4. 约定的目录结构（在超级 pom 中配置）![./images](Maven/img011.621b1ac3.png)
     另外还有一个 target 目录专门存放构建操作输出的结果。
 
 ### 3. Maven 的构建命令
@@ -264,7 +254,7 @@ date: 2024-04-05 13:32:28
 ### 4. 创建 Maven 版的 Web 工程
 
 1. 使用 `mvn archetype:generate` 命令生成 Web 工程时，需要使用一个专门的 archetype。这个专门生成 Web 工程骨架的 archetype 可以参照官网看到它的用法：
-    ![./images](img014.942770a3.png)
+    ![./images](Maven/img014.942770a3.png)
     参数 `archetypeGroupId`、`archetypeArtifactId`、`archetypeVersion` 用来指定现在使用的 maven-archetype-webapp 的坐标。
 
 2. 不能在一个非 pom 的工程下再创建其他工程。所以不要再刚才创建的工程里再创建新的工程，所以要回到工作空间根目录来操作。
@@ -384,7 +374,7 @@ date: 2024-04-05 13:32:28
     3. B 对 C 的依赖的查看，可以查看 B 的 jar 包中的 pom.xml 文件的 `<dependency>`，从而查看依赖范围。
 
 2. 当为了避免 jar 包之间的冲突时，需要用到依赖的排除，例如：
-    ![./images](img027.2faff879.png)
+    ![./images](Maven/img027.2faff879.png)
     此时排除时，要从 A -> B 之间排除依赖，这样才能保证 B 不会出现问题。
 
 3. 排除的配置方式：
@@ -547,7 +537,7 @@ date: 2024-04-05 13:32:28
 
 11. 继承的实际意义：
 
-    ![./images](img037.53c95c38.jpg)
+    ![./images](Maven/img037.53c95c38.jpg)
 
     编写一套符合要求、开发各种功能都能正常工作的依赖组合并不容易。如果公司里已经有人总结了成熟的组合方案，那么再开发新项目时，如果不使用原有的积累，而是重新摸索，会浪费大量的时间。为了提高效率，我们可以使用工程继承的机制，让成熟的依赖组合方案能够保留下来。
 
@@ -578,11 +568,11 @@ date: 2024-04-05 13:32:28
 ### 3. 在 IDEA 中执行 Maven 命令
 
 1. IDEA 右边的工具栏中，找到 Maven 点开，到具体的 module，然后里面有 Lifecycle 文件夹，点开，双击里面的命令就会执行。
-    ![image-20230130134515513](image-20230130134515513.png)
+    ![image-20230130134515513](Maven/image-20230130134515513.png)
 
 2. 同样的，Maven 内还有 `m` 的图表，点击后可以输入执行命令，同时也可以指定命令执行的范围。
 
-    ![](download.png)
+    ![](Maven/download.png)
 
     ```sh
     # -D 表示后面要附加命令的参数，字母 D 和后面的参数是紧挨着的，中间没有任何其它字符
@@ -595,7 +585,7 @@ date: 2024-04-05 13:32:28
 1. 修改打包方式为 war。
 2. 对于 18 后版本的 IDEA，改了打包方式后，Project Structure -> Facets 下就会自动生成 Web 设定，如果没有的话，需要手动创建。
 3. 生成 web.xml：在 Facets 的具体模块中，在 Deployment Descriptors（部署描述符） 中添加，注意目录要改：
-    ![./images](img046.71c20d43.png)
+    ![./images](Maven/img046.71c20d43.png)
 
 ## 5. 其他的一些操作
 
@@ -632,7 +622,7 @@ date: 2024-04-05 13:32:28
 2. 目标：
     一个插件可以对应多个目标，而每一个目标都和生命周期中的某一个环节对应。
     Default 生命周期中有 compile 和 test-compile 两个和编译相关的环节，这两个环节对应 compile 和 test-compile 两个目标，而这两个目标都是由 maven-compiler-plugin-3.1.jar 插件来执行的。
-    ![image-20230130163558304](image-20230130163558304.png)
+    ![image-20230130163558304](Maven/image-20230130163558304.png)
     可以看到插件，以及插件的对应目标。（这也就对应了，为什么双击这些插件就会执行对应生命周期的命令)。
 
 ### 3. 仓库

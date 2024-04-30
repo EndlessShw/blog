@@ -1,13 +1,3 @@
-﻿---
-title: JavaWeb
-categories:
-- Java&JavaWeb
-- JavaWeb
-tags:
-- Back end
-date: 2024-04-05 13:32:28
----
-
 # JavaWeb
 
 ## 1. Tomcat 
@@ -671,7 +661,7 @@ date: 2024-04-05 13:32:28
 3. JSP 到底是什么：
 
     1. JSP 是 java 程序，本质还是一个 Servlet。
-    2. 是 JavaServer Pages的缩写。（基于Java语言实现的服务器端的页面。）
+    2. 是 JavaServer Pages 的缩写。（基于Java语言实现的服务器端的页面。）
     3. Servlet 是 JavaEE 的 13 个子规范之一，那么 JSP 也是 JavaEE 的 13 个子规范之一。
     4. JSP 是一套规范。所有的 web 容器/ web 服务器都是遵循这套规范的，都是按照这套规范进行的“翻译”。
     5. 每一个 web 容器/ web 服务器都会内置一个 JSP 翻译引擎。
@@ -1077,7 +1067,7 @@ java.lang.Throwable exception;
     2. Service 业务逻辑层
     3. DAO 持久化层
 3. 三层架构和 MVC 的关系：
-    ![img](dde60b2aed4f92456f57eb598870fc86.png)
+    ![img](JavaWeb/dde60b2aed4f92456f57eb598870fc86.png)
     三层架构的 View 包含 MVC 的 VC，MVC 的 M 包含三层架构的 Service 和 DAO 以及 Beans。
 
 ### 3. DAO 层

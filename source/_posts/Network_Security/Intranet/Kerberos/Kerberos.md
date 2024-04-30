@@ -1,8 +1,3 @@
-﻿---
-title: Kerberos
-date: 2024-04-05 13:32:28
----
-
 # Kerberos 相关内容
 
 ## 1. Windows 本地认证
@@ -24,7 +19,7 @@ date: 2024-04-05 13:32:28
 
 2. NTLM Hash 是支持 Net NTLM 认证协议以及本地认证过程中的一个重要参与物，其长度为 32 位，由数字和字母组成。
 
-3. **Windows 本身不存储用户的明文密码**，它会讲密码经过加密算法后存入 sam 文件。
+3. **Windows 本身不存储用户的明文密码**，它会将密码经过加密算法后存入 sam 文件。
 
 4. 当用户登录时，**将用户输入的密码加密成 NTLM Hash**，与 sam 中的进行比对。NTML Hash 的前身时 LM Hash，目前已经被淘汰，但还是存在。
 
@@ -37,7 +32,7 @@ date: 2024-04-05 13:32:28
 1. Windows Logon Process（即 winlogon.exe）是 Windows NT 用户登录程序，用于管理用户登录和退出。
 2. LSASS 用于微软 Windows 系统的安全机制。它用于本地安全和登陆策略。
 3. 登录的流程：
-    ![本地认证流程](本地认证流程-1685346024111-2.png)
+    ![本地认证流程](Kerberos/本地认证流程-1685346024111-2.png)
 
 ### 1.5 LM Hash 的过程
 
@@ -70,9 +65,9 @@ date: 2024-04-05 13:32:28
 2. 第二步：质询与验证
 
     1. 客户端向服务器发送用户信息（用户名）请求。
-    2. 服务器接受到请求，生成一个 16  位的随机数，这个过程称之为 “Challenge”，使用登录用户名对应的 NTLM Hash 加密 Challenge（16 位随机字符），生成 Challenge1。同时，将 Challenge 发送给客户端。
+    2. 服务器接受到请求，生成一个 16  位的随机数，这个过程称之为 “Challenge”，使用登录用户名对应的 NTLM Hash 加密 Challenge（16 位随机字符），**生成 Challenge1**。同时，将 Challenge 发送给客户端。
         这个 Challenge1 实际上叫 Net NTLM Hash -= NTLM Hash(Challenge)。（存在内存中）
-    3. 客户端接受到 Challenge 后，使用将要登录到账户对应的 HTLM Hash 加密 Challenge 生成 Response，然后将 Response 发送至服务端。
+    3. 客户端接受到 Challenge 后，使用将要登录到账户对应的 HTLM Hash **加密 Challenge 生成 Response**，然后将 Response 发送至服务端。
     4. 服务端收到 Response 后，将其和 Challenge1 进行对比。如果相等则认证通过。
 
     注意点：
@@ -97,16 +92,16 @@ date: 2024-04-05 13:32:28
 
 3. **使用的必要条件**：
 
-    1. 被认证的主机能访问到服务器
-    2. 被传递认证的用户名，比如我想传递管理员的 hash，那我就要知道管理员的用户名（因为不一定就是 admin）
-    3. 被传递认证用户的 NTLM Hash。
+    1. 被认证的主机能访问到服务器（保证连通性）
+    2. 被传递认证的用户名，比如我想传递**管理员**的 hash，那我就要知道管理员的用户名（因为不一定就是 admin）
+    3. **被传递认证用户的 NTLM Hash**。
 
-    可以看出，最终的作用就是在不知道密码的情况下，用客户端的 Challenge，构造出 Response。
+    可以看出，最终的作用就是在不知道密码的情况下，用客户端的 Challenge，使用获取到的 NTML Hash，构造出 Response。
 
 4. 常用的工具：
 
     1. CrackMapExec
-        ![image-20230530110015003](image-20230530110015003.png)
+        ![image-20230530110015003](Kerberos/image-20230530110015003.png)
     2. Smbexec、Metasploit
 
 ### 2.6 Active Directory（活动目录）介绍
@@ -128,38 +123,38 @@ date: 2024-04-05 13:32:28
 
 ### 2.8 KDC/DC 以及粗略的认证流程
 
-1. AD（Account Database）：存储所有 Client 的白名单，只有存在于白名单的 Client 才能**顺利申请到 TGT**）
+1. AD（Account Database）：存储所有 Client 的白名单，只有存在于白名单的 Client 才能**顺利申请到 TGT**（Ticket-granting Ticket））
 2. AS（Authentication Service）：为 Client 生成 TGT 的服务。
-3. TGS（Ticket Granting Service）：**为 Client 生成某个服务的 ticket**
+3. TGS（Ticket Granting Service）：**为 Client 生成某个服务的 ticket**。
 4. 示例图：
-    ![image-20230530145333470](image-20230530145333470.png)
+    ![image-20230530145333470](Kerberos/image-20230530145333470.png)
 5. 从物理层面来看，AD 和 KDC 均为域控制器（Domain Controller）。
 6. 域认证流程 -- 粗略
     1. Client 向 Kerberos 服务请求，希望获得访问 Server 的权限。Kerberos 得到了该信息，首先会判断 Client 是否是可信赖的（即是否处于白名单中，这就是 AS 的工作），通过在 AD 中存储的黑白名单来区分 Client。成功后，**AS 返回 TGT 给 Client。**
     2. Client 得到了 TGT 后，继续向 Kerberos 请求，希望获取访问 Server 的权限。Kerberos 再次获得请求后，通过 Client 消息中的 TGT，判断出 Client 拥有权限，然后 TGS 给了 Client 访问 Server 的权限 Ticket。
     3. Client 获得到 Ticket 后，可以访问 Server 了。这个 Ticket 只针对特定的那个 Server，其他的 Server 还需要向 TGS 申请。
 7. 流程图：
-    ![image-20230530151354507](image-20230530151354507.png)
+    ![image-20230530151354507](Kerberos/image-20230530151354507.png)
 
 ### 2.9 认证的详细流程
 
 1. 第一步：
-    ![image-20230530151719299](image-20230530151719299.png)
+    ![image-20230530151719299](Kerberos/image-20230530151719299.png)
 2. 第一步：
-    ![image-20230530152017531](image-20230530152017531.png)
+    ![image-20230530152017531](Kerberos/image-20230530152017531.png)
     注意：
-    1. Client Hash 就是 NTLM-Hash。Session Key 是随机生成的一串。
-    2. TGT 的内容是**使用特定用户 Krbtgt 的 NTLM-Hash**（也就是 KDC Hash） 加密的 Session-key(AS 生成的)、时间戳以及一些用户信息，这个用户信息就是PAC，PAC 包含用户的sid，用户所在的组。
+    1. Client Hash 就是 NTLM-Hash。**Session Key 是随机生成的一串**。
+    2. TGT 的内容是**使用特定用户 Krbtgt 的 NTLM-Hash**（也就是 KDC Hash） **加密的** Session-key(AS 生成的)、时间戳以及一些用户信息，这个用户信息就是 PAC，PAC 包含用户的 sid，用户所在的组。
 3. 第二步：
-    ![image-20230530152630164](image-20230530152630164.png)
+    ![image-20230530152630164](Kerberos/image-20230530152630164.png)
     这里使用的是上一步解密获得到的 Session Key，对时间戳和客户端的身份信息进行加密。
     然后 TGS 用 krbtgt 的 NTLM-Hash 去解密客户端发送的，被客户端解密得出的 Session Key 加密的内容，如果正常，就能得到客户端的信息和时间戳。这时再和后半段 Cilent 传输的客户端信息进行比对，验证数据合法性。
-    这里的图有点问题，Ticket 外面应该没有 Server Hash。Ticket 应该用对称算法加密，密钥就是 Server Hash。
+    **这里的图有点问题，Ticket 外面应该没有 Server Hash。Ticket 应该用对称算法加密，密钥就是 Server Hash。**
 4. Ticket 的组成：
-    ![image-20230530153848781](image-20230530153848781.png)
-    客户端拿到 TGS 返回的信息后，使用 Session Key 获得到 Server Session Key。除了拿到 Server Session Key，还有一个被 Server Hash 加密的 Ticket，这个 Ticket 客户端由于没有 Server Hash，因此无法解密。这里 Server Hash 是作为加密算法的 key，采用对称加密。
+    ![image-20230530153848781](Kerberos/image-20230530153848781.png)
+    客户端拿到 TGS 返回的信息后，使用 Session Key 获得到 Server Session Key。除了拿到 Server Session Key，**还有一个被 Server Hash 加密的 Ticket**，这个 Ticket 客户端由于没有 Server Hash，因此无法解密。这里 Server Hash 是作为加密算法的 key，采用对称加密。
 5. 第三步：
-    ![image-20230530155320628](image-20230530155320628.png)
+    ![image-20230530155320628](Kerberos/image-20230530155320628.png)
     Server 用自己的 Server Hash（服务器端的 NTLM Hash) 去解密 Ticket，拿到 Server Session Key，从而解密得出 Client Info 和 Timestamp，这些数据再和 Ticket 中的数据进行比对。
 
 ### 2.10 白银票据
@@ -167,9 +162,9 @@ date: 2024-04-05 13:32:28
 1. 特点：
 
     1. 不需要和 KDC 进行交互
-    2. 需要目标服务器的 NTLM Hash
+    2. 需要目标服务器 Server 的 NTLM Hash
 
-2. 当拥有 NTLM Hash 后，其就能够伪造不经过 KDC 认证的 Ticket（Server Session Key 可以完全自己伪造）。实际上，一切凭据都来源于 Server Hash。
+2. 当拥有 NTLM Hash 后，**其就能够伪造不经过 KDC 认证的 Ticket**（Server Session Key 可以完全自己伪造）。实际上，一切凭据都来源于 Server Hash。
 
 3. 其伪造可以使用 Mimikatz 进行构造：
     `kerberos::list` -- 列出票据
@@ -183,7 +178,7 @@ date: 2024-04-05 13:32:28
         `mimikatz "kerberos::golden /domain:<域名> /sid:<域 SID> /target:<目标服务器主机名> /service:<服务类型> /rc4:<NTLM Hash> /user:<用户名> /ptt" exit`
 
 5. 局限性：
-    由于白银票据需要目标服务器的 NTLM Hash，所以无法生成对应域内所有服务器的票据，也不能通过 TGT 去申请。因此只能针对服务器上的某些服务去伪造，伪造的类型如下：
+    由于白银票据需要目标服务器的 NTLM Hash，所以无法生成对应域内所有服务器的票据，也不能通过 TGT 去申请。因此**只能针对服务器上的某些服务**去伪造，伪造的类型如下：
 
     | 服务注释                                   | 服务名            |
     | ------------------------------------------ | ----------------- |
@@ -200,7 +195,7 @@ date: 2024-04-05 13:32:28
 6. 防御：
 
     1. 尽量保证服务器凭证不被截取
-    2. 开始 PAC（Privilege Attribute Certificate）特权属性证书保护功能，PAC 主要是规定服务器将票据发送给 Kerberos 服务，由 Kerberos 服务来验证票据是否有效。
+    2. 开始 PAC（Privilege Attribute Certificate）特权属性证书保护功能，PAC 主要是**规定服务器将票据发送给 Kerberos 服务，由 Kerberos 服务来验证票据是否有效。**
         开始方式：将注册表中的 HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/Lsa/Kerberos/Parameters 中的 ValidateKdcPacSignature 设置为 1。
         PAC 的缺点在于，降低认证效率，增加 DC 负担。如果服务对外开放，那么很容易被攻击，那么白银票据也容易被拿到。最根本的还是要加固服务器本身。
 
@@ -227,7 +222,7 @@ date: 2024-04-05 13:32:28
 
 ### 3.1 Windows Access Token 介绍
 
-1. Windows Access Token 是一个描述进程或者线程安全上下文的一个对象。不同的用户登录计算机后，都会生成一个 Access Token，这个 Token 在用户创建进程或者线程时会被使用，不断的拷贝，这也就解释了 A 用户创建一个进程而该进程没有 B 用户的权限。
+1. Windows Access Token 是一个描述进程或者线程安全上下文的一个对象。**不同的用户登录计算机后，都会生成一个 Access Token**，这个 Token 在用户创建进程或者线程时会被使用，不断的拷贝，这也就解释了 A 用户创建一个进程而该进程没有 B 用户的权限。
 2. Access Token 分为两种：主令牌和模拟令牌。
 3. 一般情况下，用户双击运行一个程序，都会拷贝 “explorer.exe” 的 Access Token。
 4. **当用户注销后，系统将会使主令牌切换到模拟令牌，不会将令牌清除，只有在重启机器后才会清除**。
@@ -272,12 +267,12 @@ date: 2024-04-05 13:32:28
     2. PowerShell - Invoke - TokenManipulation.ps1
     3. Cobalt Strike - steal_token
 
-    等工具来获取系统上已经存在的模拟令牌。
+    等工具来获取系统上已经存在的**模拟令牌**。
 
 2. 防御：
     禁止 Domain Admins 登录对外且未作安全加固的服务器，因为一旦服务器被入侵，域管的令牌可能会被攻击者假冒，从而控制 DC。如果想清除假冒，重启服务器即可。
 
-## 4. 拓展
+## 4. 知识拓展
 
 1. 域渗透技术/思路：
 
@@ -291,7 +286,6 @@ date: 2024-04-05 13:32:28
 
     > https://github.com/yeyintminthuhtut/Awesome-Red-Teaming
 
-4. 
+## 5. 针对 Kerberos 的攻击
 
-
-
+todo MS14068、SPN 等

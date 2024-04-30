@@ -1,13 +1,3 @@
-﻿---
-title: RecyclerView
-categories:
-- Android
-- Basic principle
-tags:
-- Android
-date: 2024-04-05 13:32:28
----
-
 # RecyclerView
 
 ## 1. 构件眉目菜单，为后面展现各种不同的样式
@@ -113,7 +103,7 @@ date: 2024-04-05 13:32:28
     </menu>
     ```
 
-    ![image-20220210000358061](image-20220210000358061.png)
+    ![image-20220210000358061](RecyclerView/image-20220210000358061.png)
 
     `onCreateOptionsMenu(Menu menu)` 和 `onOptionsItemSelected(@NonNull MenuItem item)`（部分） ：
     
@@ -643,7 +633,7 @@ date: 2024-04-05 13:32:28
     </RelativeLayout>
     ```
 
-    ![image-20220210000921309](image-20220210000921309.png)
+    ![image-20220210000921309](RecyclerView/image-20220210000921309.png)
 
 14. item_grid_view.xml：
 
@@ -692,7 +682,7 @@ date: 2024-04-05 13:32:28
     </RelativeLayout>
     ```
 
-    ![image-20220210001010684](image-20220210001010684.png)
+    ![image-20220210001010684](RecyclerView/image-20220210001010684.png)
 
 
 
@@ -859,11 +849,11 @@ date: 2024-04-05 13:32:28
 
 6. 类似 ListView 效果（垂直标准）：
 
-    ![image-20220210000553840](image-20220210000553840.png)
+    ![image-20220210000553840](RecyclerView/image-20220210000553840.png)
 
     类似 GridView 效果（垂直标准）：
 
-    ![image-20220210000624441](image-20220210000624441.png)
+    ![image-20220210000624441](RecyclerView/image-20220210000624441.png)
 
 
 
@@ -923,7 +913,7 @@ date: 2024-04-05 13:32:28
     </RelativeLayout>
     ```
 
-    ![image-20220210000732137](image-20220210000732137.png)
+    ![image-20220210000732137](RecyclerView/image-20220210000732137.png)
 
 4. showStagger，就是实现瀑布流效果的方法：
 
@@ -980,7 +970,7 @@ date: 2024-04-05 13:32:28
 
 6. 瀑布流效果：
 
-    ![image-20220210001151559](image-20220210001151559.png)
+    ![image-20220210001151559](RecyclerView/image-20220210001151559.png)
 
 
 
@@ -1075,7 +1065,7 @@ date: 2024-04-05 13:32:28
 
 1. 效果图：
 
-    ![image-20220210001244826](image-20220210001244826.png)
+    ![image-20220210001244826](RecyclerView/image-20220210001244826.png)
 
 
 
@@ -1231,7 +1221,7 @@ date: 2024-04-05 13:32:28
         </RelativeLayout>
         ```
 
-        ![image-20220210001341946](image-20220210001341946.png)
+        ![image-20220210001341946](RecyclerView/image-20220210001341946.png)
 
     2. item_type_left_title_right_image：
 
@@ -1283,7 +1273,7 @@ date: 2024-04-05 13:32:28
         </LinearLayout>
         ```
 
-        ![image-20220210001408138](image-20220210001408138.png)
+        ![image-20220210001408138](RecyclerView/image-20220210001408138.png)
 
     3. item_type_three_images.xml：
 
@@ -1361,7 +1351,7 @@ date: 2024-04-05 13:32:28
         </LinearLayout>
         ```
         
-        ![image-20220210001434228](image-20220210001434228.png)
+        ![image-20220210001434228](RecyclerView/image-20220210001434228.png)
 
 4. MultiTypeViewAdapter.java（布局使用静态的，未绑定数据等等）：
 
@@ -1538,9 +1528,9 @@ date: 2024-04-05 13:32:28
 
 1. 效果图
 
-    ![image-20220210001612854](image-20220210001612854.png)
+    ![image-20220210001612854](RecyclerView/image-20220210001612854.png)
 
-    ![image-20220210001625042](image-20220210001625042.png)
+    ![image-20220210001625042](RecyclerView/image-20220210001625042.png)
 
 
 
@@ -1924,7 +1914,7 @@ date: 2024-04-05 13:32:28
     </RelativeLayout>
     ```
 
-    ![image-20220210001817787](image-20220210001817787.png)
+    ![image-20220210001817787](RecyclerView/image-20220210001817787.png)
 
     
 
@@ -1932,8 +1922,8 @@ date: 2024-04-05 13:32:28
 
 1. 效果图
 
-    ![image-20220210001847506](image-20220210001847506.png)
+    ![image-20220210001847506](RecyclerView/image-20220210001847506.png)
 
-    ![image-20220210001857986](image-20220210001857986.png)
+    ![image-20220210001857986](RecyclerView/image-20220210001857986.png)
 
-    ![image-20220210001914059](image-20220210001914059.png)
+    ![image-20220210001914059](RecyclerView/image-20220210001914059.png)

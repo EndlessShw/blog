@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 """
 @File    : update.py
-@Time    : 2024/1/13 11:19
+@Time    : 2024/4/29 15:36
 @Author  : EndlessShw
 @Email   : 1502309758@qq.com
 @Software: PyCharm
 """
-
 import regex as re
 import os
+import argparse
 from datetime import datetime
 
 
@@ -23,7 +23,7 @@ def update(filePath):
         # 获取文件的修改日期
         updateTime = datetime.fromtimestamp(os.path.getmtime(filePath)).strftime("%Y-%m-%d %H:%M:%S")
         # 如果不包含 date，就插入 date
-        if YAMLContent.find("date") == -1 :
+        if YAMLContent.find("date") == -1:
             YAMLContent += "date: " + updateTime
             YAMLContent += "\n"
         # 如果包含 date，就修改 date 后面的内容
@@ -46,14 +46,15 @@ def update(filePath):
 
 
 def main():
-    rootPath = os.path.join(os.getcwd(), r"source\_posts")
-    # rootPath = os.getcwd()
-    # 遍历所有文件的头部
-    for root, dirs, files in os.walk(rootPath, topdown=False):
-        for fileName in files:
-            # 处理修改 .md 文件中的YAML
-            if fileName.endswith(r".md"):
-                update(os.path.join(root, fileName))
+    parser = argparse.ArgumentParser()
+    parser.description = '请输入待更新的文件的根路径'
+    parser.add_argument("-p", "--rootPath", help="根路径名", dest="rootPath", type=str, default="")
+    args = parser.parse_args()
+    rootPath = args.rootPath
+    if rootPath == "":
+        rootPath = input("请输入路径:")
+    update(rootPath)
+
 
 if __name__ == '__main__':
     main()

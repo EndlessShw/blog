@@ -1,13 +1,3 @@
-﻿---
-title: AJAX
-categories:
-- Java&JavaWeb
-- AJAX
-tags:
-- Back end
-date: 2024-04-05 13:32:28
----
-
 ## AJAX(Asynchronous JavaScript And XML)
 
 ### 1. AJAX 概述
@@ -29,7 +19,7 @@ date: 2024-04-05 13:32:28
     2. AJAX 可以“异步的”向服务器发送请求。
     3. AJAX 可以更新网页的部分，而不需要重新加载整个页面（页面局部刷新）。这也保证了“异步性”的可行性。
     4. 原理：
-        ![对AJAX异步请求的理解](对AJAX异步请求的理解.png)
+        ![对AJAX异步请求的理解](AJAX/对AJAX异步请求的理解.png)
     5. AJAX 代码属于 WEB 前端的 JS 代码。和后端的 Java 没有关系，后端也可以是 php 语言，也可以是 C 语言。
     6. AJAX 应用程序可能使用 XML 来传输数据，但将数据作为纯文本或 JSON 文本传输也同样常见。
 

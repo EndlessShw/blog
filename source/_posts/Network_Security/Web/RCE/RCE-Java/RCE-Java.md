@@ -1,14 +1,3 @@
-﻿---
-title: RCE-Java
-categories:
-- Network_Security
-- Web
-- RCE-Java
-tags:
-- Network_Security
-date: 2024-04-05 13:32:29
----
-
 # RCE-Java
 
 ## 1. `exec()` 执行系统命令
@@ -65,14 +54,14 @@ date: 2024-04-05 13:32:29
     > Every Java application has a single instance of class Runtime that allows the application to interface with the environment in which the application is running. The current runtime can be obtained from the getRuntime method.
 
 4. 该靶场运行结果如下：
-    ![image-20230404145024885](image-20230404145024885.png)
+    ![image-20230404145024885](RCE-Java/image-20230404145024885.png)
 
 ## 2. `ProcessBuilder` 对象通过 `start()` 方法执行系统命令
 
 1. 涉及的类和函数：`ProcessBuilder` 类、`ProcessBuilder` 对象的 `start()` 方法。
 
 2. 实际上，`Runtime.getRuntime().exec()` 的本质上是调用了 `ProcessBuilder` 的 `start()` 方法：
-    ![image-20230404145530933](image-20230404145530933.png)
+    ![image-20230404145530933](RCE-Java/image-20230404145530933.png)
 
 3. 靶场：
 
@@ -126,7 +115,7 @@ date: 2024-04-05 13:32:29
     ```
 
 4. 结果：
-    ![image-20230404150816050](image-20230404150816050.png)
+    ![image-20230404150816050](RCE-Java/image-20230404150816050.png)
 
 ## 3. 使用 SpEL 表达式
 
@@ -170,7 +159,7 @@ date: 2024-04-05 13:32:29
     `http://localhost:8080/rce/spel?cmd=T(java.lang.Runtime).getRuntime().exec(%22control.exe%22)`
     cmd 传入的内容基本上和 Java 语法相似。由于 `Runtime` 是外部类，因此还需要 `T(类的全路径名).方法()` 来执行代码。
 4. 结果：
-    ![image-20230404153506298](image-20230404153506298.png)
+    ![image-20230404153506298](RCE-Java/image-20230404153506298.png)
 
 ### 3.2 带回显的情况 -- （少，前提是需要代码将 expression 的结果给 return 出来）
 
@@ -197,10 +186,10 @@ date: 2024-04-05 13:32:29
 4. Payload 解析：
     1. 创建一个 Scanner 类
     2. 用 Scanner 的构造函数：
-        ![image-20230404164227873](image-20230404164227873.png)
+        ![image-20230404164227873](RCE-Java/image-20230404164227873.png)
     3. 使用 `useDelimiter("")` 方法来划界，然后用 `next()` 方法来返回 `Scanner` 中扫描的字符串。
         这里 `useDelimiter("")` 内的内容尽量复杂，这样它分界就分一个界，然后 `next()` 获取全部内容。
 5. 当然，如果出现这种情况，可以先使用 `#{算数表达式}` 来看其是否将表达式的结果返回，从而判断其是否存在 RCE：
     Payload：`#{2+2}`（记得 Url 编码）
-    ![image-20230404165810531](image-20230404165810531.png)
+    ![image-20230404165810531](RCE-Java/image-20230404165810531.png)
 

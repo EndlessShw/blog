@@ -1,0 +1,62 @@
+﻿# 用户驱动攻击
+
+## 1. 屏幕截图
+
+1. 右键 --> Explore --> Screenshot 或者 beacon 中输入 Screenshot 截图
+
+    ![image-20220123100911696](用户驱动攻击-cnblog//img2022.cnblogs.com/blog/2290645/202201/2290645-20220123160523463-1641591416.png)
+
+    在 session 中，可以设置 beacon 的休眠期，其中的时间表示多少秒后 beacon 执行命令。同时也可以在 beacon 中输入 sleep \<秒数\> 来设置休眠期。
+
+2. 截图的查看在 View --> Screenshots 中查看
+
+    ![image-20220123101350417](用户驱动攻击-cnblog//img2022.cnblogs.com/blog/2290645/202201/2290645-20220123160523176-306934661.png)
+
+3. 进程截图：
+
+    右键 --> Explore --> Precess List 下可以看到靶机的所有进程及其状态。选择一个进程，然后点击下面的 Screenshot 就可以对某个进程进行截图
+
+
+
+## 2. 键盘记录
+
+1. 在 Process List 选项卡中，最底下一层有 Log Keystrokes 选项。其对具体的进程进行键盘的使用记录。
+
+    ![image-20220123102349188](用户驱动攻击-cnblog//img2022.cnblogs.com/blog/2290645/202201/2290645-20220123160522676-1102919636.png)
+
+
+
+## 3. 端口扫描
+
+1. 右键 --> Explore --> Port Scan。在跳出的界面中设置扫描的一些参数。
+
+    命令：portscan \<ip 或者 ip 段（- 表示段）\> \<port 或者 port 段，具体的用逗号连接\> \<协议类型 arp|icmp \> \<最大线程数\>
+
+
+
+## 4. 文件管理
+
+1. 右键 --> Explore --> File Browser 查看靶机的文件系统。可以增删改查。
+
+
+
+## 5. 远程 VNC（Virtual Network Computing）
+
+1. 右键 --> Explore --> Desktop(VNC) 可以远程控制靶机电脑
+
+
+
+## 6. 浏览器代理
+
+1. 右键 --> Explore --> Browser Pivot。选择一个靶机来进行浏览器代理。
+2. 成功后，在 beacon 框中有代理的 ip 地址和端口。
+
+
+
+## 7. 任务处理
+
+1. beacon 中输入 jobs 可以查看目前运行了哪些在执行命令。
+2. jobkill \<JID\> 终止一个任务。
+
+
+

@@ -1,13 +1,3 @@
-﻿---
-title: mybatis
-categories:
-- Back end
-- SSM
-tags:
-- Back end
-date: 2024-04-05 13:32:30
----
-
 # MyBatis 框架
 
 ## 1. MyBatis 概述
@@ -15,7 +5,7 @@ date: 2024-04-05 13:32:30
 ### 1. 三层架构
 
 1. 三层架构图：
-    ![](image-20230131101918502.png)
+    <img src="mybatis.assets/image-20230131101918502.png" alt="image-20230131101918502" style="zoom: 33%;" />
     1. 表现层（UI）：直接跟前端打交互（⼀是接收前端 AJAX 请求，⼆是返回 JSON 数据给前端）
     2. 业务逻辑层（BLL）：⼀是处理表现层转发过来的前端请求（也就是具体业务），⼆是将从持久层获取的数据返回到表现层。
     
@@ -24,7 +14,7 @@ date: 2024-04-05 13:32:30
 2. 常见的 Java 持久层框架：MyBatis、Hibernate（实现了JPA规范）、jOOQ、Guzz、Spring Data（实现了JPA规范）、ActiveJDBC......
 
 3. MVC 模式和“三层架构”之间的关系：
-    ![MVC 模式和“三层架构”之间的关系](watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dpbnN0b25MYXU=,size_16,color_FFFFFF,t_70.png)
+    ![MVC 模式和“三层架构”之间的关系](mybatis/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L1dpbnN0b25MYXU=,size_16,color_FFFFFF,t_70.png)
 
 ### 2. JDBC 的缺点
 
@@ -227,7 +217,7 @@ date: 2024-04-05 13:32:30
 
 2. MyBatis 常见的集成日志组件：SLF4J、LOG4J2、COMMONS_LOGGING...
     详见官方文档中的“配置”：
-    ![image-20230201120939738](image-20230201120939738.png)
+    ![image-20230201120939738](mybatis/image-20230201120939738.png)
 
 3. STDOUT_LOGGING 是标准日志，MyBatis 已经实现了这种标准日志，只要开启即可。在 mybatis-config.xml 核心配置文件中使用 `<settings>` 标签进行配置开启（注意要放在 `<environments>` 之前，记不住顺序也没事，有 dtd 格式约束）。
     ```xml
@@ -893,7 +883,7 @@ date: 2024-04-05 13:32:30
     ```
 
 4. 高版本的 JDK（大于 8 应该）需要额外配置：
-    ![image-20230207160833144](image-20230207160833144.png)
+    ![image-20230207160833144](mybatis/image-20230207160833144.png)
     在 Edit Configurations 中做出上述图片的更改，如果没有第一个红框，就添加 VM options。
 
 5. 生成测试接口并实现测试方法：
@@ -1310,7 +1300,7 @@ date: 2024-04-05 13:32:30
 ### 5. `@Param` 源码分析（可以重复看）
 
 1. 用到了一个数组（存参数的值）和一个 SortedMap（存注解中的内容）
-    ![004-Param注解源码分析](004-Param注解源码分析.png)
+    ![004-Param注解源码分析](mybatis/004-Param注解源码分析.png)
 
 ## 11. 针对 MyBatis 查询语句结果/返回值的处理
 
@@ -1630,7 +1620,7 @@ date: 2024-04-05 13:32:30
     可以看出，只执行了 1 条 SQL 语句，否则执行两条 SQL 语句，默认不是延迟加载。
 
 5. 在 `<association>` 中配置只是局部配置，全局开启：
-    ![image-20230211114455732](image-20230211114455732.png)
+    ![image-20230211114455732](mybatis/image-20230211114455732.png)
 
 6. 在实际开发中，大部分情况下都是使用延迟加载的；特殊需求就在某个特定的 `<association>` 中配置 `fetchType = eager`。
 
@@ -1677,7 +1667,7 @@ date: 2024-04-05 13:32:30
 
 1. 实际上各大关系型数据库的数据，都是存放在文件当中，以保证持久化。
 2. 原理：
-    ![007-对缓存的理解](007-对缓存的理解.png)
+    ![007-对缓存的理解](mybatis/007-对缓存的理解.png)
 3. mybatis 缓存包括：
     1. 一级缓存：将查询到的数据存储到 SqlSession 中。
     2. 二级缓存：将查询到的数据存储到 SqlSessionFactory 中。
@@ -1958,3 +1948,5 @@ date: 2024-04-05 13:32:30
         ...
     })
     ```
+
+    

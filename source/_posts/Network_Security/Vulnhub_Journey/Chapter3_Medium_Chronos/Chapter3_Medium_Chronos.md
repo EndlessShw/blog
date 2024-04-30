@@ -7,7 +7,6 @@ categories:
 tags:
 - Network_Security
 - Vulnhub
-date: 2024-04-05 13:32:28
 ---
 
 # Chronos 靶场记录
@@ -22,13 +21,13 @@ date: 2024-04-05 13:32:28
 2. 端口扫描：
     `nmap -Pn -sV 192.168.0.101 -p 1-10000`
     服务如下：
-    ![image-20240116113758731](image-20240116113758731.png)
+    ![image-20240116113758731](Chapter3_Medium_Chronos/image-20240116113758731.png)
 
 3. 除了目录扫描，还可以查看一下网页源代码，这里发现一个加密脚本：
-    ![image-20240116114455084](image-20240116114455084.png)
+    ![image-20240116114455084](Chapter3_Medium_Chronos/image-20240116114455084.png)
 
 4. 使用 cyberchef 对代码进行美化，cyberchef 本身也有编码转化等功能：
-    ![image-20240116115232477](image-20240116115232477.png)
+    ![image-20240116115232477](Chapter3_Medium_Chronos/image-20240116115232477.png)
 
 5. 根据 URL 猜测，试着访问：
     `http://192.168.0.101:8000/date?format=4ugYDuAkScCG5gMcZjEN3mALyG1dD5ZYsiCfWvQ2w9anYGyL`
@@ -39,11 +38,11 @@ date: 2024-04-05 13:32:28
 
 7. 再次访问，页面更新，但是没有啥交互窗口，因此抓个包看看。
     根据 HTTP 历史，总共有三个包，着重看返回日期的包：
-    ![image-20240116141132284](image-20240116141132284.png)
+    ![image-20240116141132284](Chapter3_Medium_Chronos/image-20240116141132284.png)
     经过测试发现，当 User-Agent 为 Chronos 时，会返回时间，否则提示 Permission Denied。
 
 8. 其次，尝试猜测 format 的含义，修改内容后，服务端无法返回时间。尝试解码，像是 Base 系列编码，挨个试试，结果是 Base 58 编码：
-    ![image-20240116141624700](image-20240116141624700.png)
+    ![image-20240116141624700](Chapter3_Medium_Chronos/image-20240116141624700.png)
     这里用的是 CaptfEncoder V2，用 CyberChef 的 magic 让它自动分析编码也省事。
 
 9. 结果是 Linux date 命令的参数，这确实是想不到。测试：
@@ -96,7 +95,7 @@ date: 2024-04-05 13:32:28
 ### 1.4 再次提权
 
 1. 利用 sudo -l，发现可以提权：
-     ![image-20240116163306479](image-20240116163306479.png)
+     ![image-20240116163306479](Chapter3_Medium_Chronos/image-20240116163306479.png)
      可以使用 sudo 来执行 npm 和 node 命令。
 
 2. 使用 node 进行提权：

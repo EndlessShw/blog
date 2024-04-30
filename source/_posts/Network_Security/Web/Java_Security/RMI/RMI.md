@@ -1,15 +1,3 @@
-﻿---
-title: RMI
-categories:
-- Network_Security
-- Web
-- Java_Security
-- RMI
-tags:
-- Network_Security
-date: 2024-04-05 13:32:28
----
-
 # RMI 反序列化漏洞
 
 ## 1. RMI 基本原理
@@ -49,7 +37,7 @@ date: 2024-04-05 13:32:28
     > 白日梦组长师傅的教程视频：https://www.bilibili.com/video/BV1L3411a7ax/?spm_id_from=333.999.0.0
 
 2. 当 Server 和 Registry 不在同一台主机时，各个部分所含的主要对象：
-    ![三部分所含对象图](三部分所含对象图.png)
+    ![三部分所含对象图](RMI/三部分所含对象图.png)
 
 3. 如果在同一主机时，Server 端拿到的**就是 `RegistryImpl` 对象**而不是自己生成 `RegistryImpl_Stub`，此时在“注册中心绑定”时就不会通过 `RegistryImpl_Stub` 来和 Registry 通信，而是直接拿到了 `RegistryImpl` 对象并调用其 `bind()/rebind()`，因此就**不会调用 Registry 的 `UnicastServerRef` 对象的 `RegistryImpl_Skel` 的 `dispatch()` 来进行序列化和反序列化的处理**。但是客户端进行“服务查找”时，还是会调用 `RegistryImpl_Skel` 的 `dispatch()`。
 

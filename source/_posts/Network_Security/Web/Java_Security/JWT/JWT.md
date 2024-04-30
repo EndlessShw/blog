@@ -1,15 +1,3 @@
-﻿---
-title: JWT
-categories:
-- Network_Security
-- Web
-- Java_Security
-- JWT
-tags:
-- Network_Security
-date: 2024-04-05 13:32:28
----
-
 # JWT 认证漏洞
 
 ## 1. 签名为空的漏洞 CVE-2015-9235

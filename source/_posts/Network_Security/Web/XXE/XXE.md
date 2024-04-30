@@ -1,14 +1,3 @@
-﻿---
-title: XXE
-categories:
-- Network_Security
-- Web
-- XXE
-tags:
-- Network_Security
-date: 2024-04-05 13:32:30
----
-
 # XXE 实体注入
 
 ## 1. 使用条件
@@ -134,14 +123,14 @@ date: 2024-04-05 13:32:30
 
 2. 进入后界面如下：
 
-    ![image-20220517202533002](image-20220517202533002.png)
+    ![image-20220517202533002](XXE/image-20220517202533002.png)
 
 3. 根据靶场的源代码，可以看出通过 xml 参数，以 POST 方法传递过去并交给方法 `simple_load_string()` 执行。
 
 4. 这里抓包，然后传入 payload，具体 payload 如下（POST 也要进行 URL 编码）：
 
     ```xml-dtd
-    xml=%3C%3Fxml%20version%3D%221.0%22%3F%3E%3C!DOCTYPE%20%20a%20%20%5B%3C!ENTITY%20b%20SYSTEM%20%22http%3A%2F%2Flocalhost%2Fxxe02.php%22%3E%5D%3E%3Croot%3E%26b%3B%3C%2Froot%3E
+    xml=%3C%3Fxml%20version%3D%221.0%22%3F%3E%3C!DOCTYPE%20a%20%5B%3C!ENTITY%20b%20SYSTEM%20%22http%3A%2F%2Flocalhost%2Fxxe02.php%22%3E%5D%3E%3Ca%3E%26b%3B%3C%2Fa%3E
     ```
 
     这里对 payload 进行 url-encode，未编码前的 payload 为（换行符没有编码，这里只是为了方便查看）：
@@ -155,11 +144,11 @@ date: 2024-04-05 13:32:30
     <a>&b;</a>
     ```
 
-    这里调用了实体 b，然后被打印出来。
+    这里调用了**实体 b**，然后被打印出来。
 
 5. 这里上传成功后，显示的结果为：
 
-    ![image-20220517203246919](image-20220517203246919.png)
+    ![image-20220517203246919](XXE/image-20220517203246919.png)
 
 6. 同样的，这里也可以用 php 的伪协议：
 
