@@ -1,3 +1,12 @@
+---
+title: AJAX
+categories:
+- WebDev
+- Java&JavaWeb
+tags:
+- WebDev
+---
+
 ## AJAX(Asynchronous JavaScript And XML)
 
 ### 1. AJAX 概述

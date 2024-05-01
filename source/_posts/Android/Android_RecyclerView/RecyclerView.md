@@ -1,3 +1,12 @@
+---
+title:  RecyclerView
+categories:
+- Android
+tags:
+- Android
+date: 2024-05-01 13:46:55
+---
+
 # RecyclerView
 
 ## 1. 构件眉目菜单，为后面展现各种不同的样式

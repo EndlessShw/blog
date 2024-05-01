@@ -1,3 +1,12 @@
+---
+title: Maven
+categories:
+- WebDev
+- Java&JavaWeb
+tags:
+- WebDev
+---
+
 # Maven(http://heavy_code_industry.gitee.io/code_heavy_industry/pro002-maven/)
 
 ## 1. Maven 介绍

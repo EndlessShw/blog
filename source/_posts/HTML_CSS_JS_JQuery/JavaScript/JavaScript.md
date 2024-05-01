@@ -1,3 +1,13 @@
+---
+title: JavaScript
+categories:
+- WebDev
+- HTML&CSS&JS&JQuery
+tags:
+- WebDev
+date: 2024-05-01 13:56:56
+---
+
 # JavaScript
 
 ## 1.  初识 JavaScript

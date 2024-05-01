@@ -1,3 +1,12 @@
+---
+title: JavaSE 进阶
+categories:
+- WebDev
+- Java&JavaWeb
+tags:
+- WebDev
+---
+
 # JavaSE 进阶的知识
 
 ## 1. Collection 集合

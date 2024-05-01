@@ -1,3 +1,12 @@
+---
+title: MySQL
+categories:
+- Databases
+- MySQL
+tags:
+- Databases
+---
+
 ## MySQL 学习笔记
 
 ### 1. windows 系统中启动和关闭服务

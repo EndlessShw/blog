@@ -1,3 +1,12 @@
+---
+title: Cpp
+categories:
+- Cpp
+tags:
+- Cpp
+date: 2024-05-01 13:50:58
+---
+
 ## C++ 语法
 
 ### 1. 输入数据
