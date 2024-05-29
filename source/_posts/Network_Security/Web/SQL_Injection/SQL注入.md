@@ -4,18 +4,36 @@
 
 # 2. Sqllab
 
+## 常见的函数和语句解释
+
+### 1. `union select` 的解释
+
+1. `union` 的作用在于将两个查询的结果合并，关键在于两个查询的结果的**字段要相同**，否则就会报错。
+2. `select number1, number2...` 时，返回的结果会：
+    1. 创建一个表，该表的列名同所输入的 number。
+        ![image-20240514155829859](SQL注入/image-20240514155829859.png)
+    2. 同时，返回的结果也只有一行，同列名。
+3. 常见的登录框执行查询语句时，通过 SQL 注入插入联合查询后，一般是这样：
+    ![image-20240514155953588](SQL注入/image-20240514155953588.png)
+    即前面优先显示数据库已有信息，后面跟着显示数字表。
+4. 如果正常业务的前半句**没有返回内容**（也就是查不到数据），那么就会直接返回 `select number1, ...` 的内容，**从而判断页面哪些是回显位**。
+5. 联合注入还有一个作用在于**控制查询结果**。如果某些系统处理查询结果的逻辑是：从数据库中取出数据再和输入的内容进行对比时，这时通过 `union select` 来**控制查询结果和输入内容**，从而绕过登录系统的验证逻辑。举例：[GXYCTF2019]BabySQli 1，其 EXP 就是：
+    `name=admi' union select 1,'admin','0cc175b9c0f1b6a831c399e269772661' #&pw=a`。控制数组的二号位以满足题目特性，控制三号位来绕过登录逻辑验证。
+
 ## 1. Less-1（字符串型）
 
 1. `id = 1 order by 数字`。报错与不报错的交错处就是列数。
 
-2. `group_concat()` 将查询结果拼凑成一个字符串
+2. `group_concat()` 将查询结果拼凑成一个字符串。
 
 3. 所有的表：information_schema.tables 这个表的 table_name 这个列的值
 
     `id = -1 union select 1,group_concat(table_name), 3 from information_schema.tables where table_schema=database()`
 
-    注意：`union select` 前面是 `select` 的话不要加 and
-    用联合查询的时候要传入非法值/没有数据的值。
+    注意：
+
+    1. `union select` 前面是 `select` 的话不要加 `and`。
+    2. 用联合查询的时候要[**传入非法值/没有数据的值**](#1. `union select` 的解释)。
 
 4. 查当前数据库名：`database()`
 
@@ -198,6 +216,12 @@
     `left(String content, int length)` 从左开始，截取 length 长度的字符串
 
     `right(String content, int length)` 从右开始。
+
+3. 使用逻辑进行判断时，这些函数的返回值一般是 0 或 1，因此在数字型的情况下，可以直接代替数字进行尝试。
+
+4. 用 `select` 取出的字符串需要用 `()` 来变成字符串，例题：
+    [CISCN2019 华北赛区 Day2 Web1]Hack World 1
+    ![image-20240515134644484](SQL注入/image-20240515134644484.png)
 
 ## 6. Less-9（时间盲注，当页面只有一种显示状态时）
 
@@ -482,6 +506,60 @@
 
 3. 决定注入方式
 
-## 2. 思维导图
+## 2. 一些绕过
+
+### 2.1 空格绕过
+
+1. 使用注释符号 `/**/`。
+
+2. 数字型注入下，可以使用 `e0` 来代替空格（但作用很有限）：
+
+    ![image-20240514171627466](SQL注入/image-20240514171627466.png)
+
+3. 有时可以使用 Tab 替代空格。
+    ![image-20240515135040575](SQL注入/image-20240515135040575.png)
+
+4. `select` 语句中 `()` 也可以代替空格：
+    `(ascii(substr((select(flag)from(flag)),1,1))=102)`
+
+### 2.2 `'` 过滤
+
+
+
+### 关键字过滤
+
+#### 1 `select` 过滤
+
+1. 使用 `show` 关键字来获得大部分的信息：
+    ```sql
+    # 查看数据库
+    show databases;
+    # 查看当前数据库所使用的表
+    show tables;
+    # 查看指定表内的所有的列
+    [show columns from]|[describe] 表名;
+    ```
+
+2. 当注入点存在**堆叠注入**，且所用数据库为 **MySQL** 时，可以使用 `handler` 关键字。
+    `handler` 关键字的作用在于一行一行的浏览表中数据。因此 `handler` 相当于创建一个**指向特定表的行指针**。
+    `handler` 语句提供通往表的直接通道的存储引擎接口，可以用于 MyISAM 和 InnoDB 表。
+    常见语法：
+
+    ```sql
+    # 创建句柄
+    handler 表名 open;
+    # 获取句柄第一行
+    handler 表名 read first;
+    # 之后通过 read next 获取其他行
+    handler 表名 read [next | prev];
+    # 关闭句柄
+    handler 表名 close;
+    # 通过索引值，可以指定从哪一行开始
+    handler 表名 read 列名 = 值 [where condition] [limit ...];
+    ```
+
+    例题：[GYCTF2020]Blacklist 1。
+
+## 3. 思维导图
 
 1. 思维导入（护网）![SQL 注入](SQL注入/SQL 注入.png)

