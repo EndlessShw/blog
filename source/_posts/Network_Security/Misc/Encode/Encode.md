@@ -5,7 +5,7 @@ categories:
 tags:
 - Misc
 - Encode
-date: 2024-05-06 20:33:54
+date: 2024-07-29 14:37:10
 ---
 
 # 常见的编码
@@ -45,3 +45,33 @@ date: 2024-05-06 20:33:54
 1. 本质就是十六进制编码。
 2. 格式：`0x 16 进制编码`。
 3. hex 结果和 base16 的结果相同。
+
+# 和编码有关的渗透
+
+## 1. URL 中 IDNA 编码导致的绕过
+
+1. 最初的来源是 Blackhat 2019 的会议上：
+    https://i.blackhat.com/USA-19/Thursday/us-19-Birch-HostSplit-Exploitable-Antipatterns-In-Unicode-Normalization.pdf
+2. IDN：
+    国际化域名(Internationalized Domain Name,IDN)又名特殊字符域名，是指部分或完全使用特殊文字或字母组成的互联网域名，包括中文、法语、阿拉伯语、希伯来语或拉丁字母等非英文字母，这些文字经过多字节万国码编码而成。在域名系统中，国际化域名使用 **punycode 转写并以 ASCII 字符串存储**。
+3. 使用 IDNA 编码后，域名可以出现中文等字符。
+4. 但是有些 Unicode 字符经过 IDNA 编码再经过 UTF-8 解码后，就会变成常见的字符，例如：℆ 经过 IDNA 编码再 UTF-8 解码后变成 c/u。又例如：
+    ![image-20240702161533039](Encode/image-20240702161533039.png)
+    这些字符在经过处理后都会变成字母 C。
+5. 例题：[SUCTF 2019]Pythonginx 1
+
+## 2. PHP 的 JSON 编码
+
+1. PHP 的 `json_decode()` 方法会自动将 Unicode 编码转换成对应字符。例如：
+    ```php
+    $a = '{"poc":"\u0070\u0068\u0070"}';
+    $b = json_decode($a, true);
+    var_dump($b);
+    ```
+
+2. 结果如下：
+    ![image-20240729142430680](Encode/image-20240729142430680.png)
+
+3. 例题：[HarekazeCTF2019]encode_and_encode 1
+
+    

@@ -1,4 +1,4 @@
-# RMI 反序列化漏洞
+# RMI （Remote Method Invocation）反序列化漏洞
 
 ## 1. RMI 基本原理
 

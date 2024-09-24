@@ -238,6 +238,25 @@
 1. 内网探测，访问 http 访问指定端口来判断端口是否开启
 2. 文件读取和命令执行：文件读取就看是否支持伪协议，命令执行在 php 的网站中就是是否开启了 `expect` 伪协议。
 
+## 7. 一些绕过
+
+1. 参考：
+
+    > https://xz.aliyun.com/t/4059?time__1311=n4%2Bxni0QG%3DoCuRgDlxGObCDObG8DBmlGArrYD
+
+### 7.1 外来编码（Exotic encodings）绕过
+
+1. 一般使用正则表达式进行匹配的 waf，基本都是针对单个字符集，但是 XML 文档是可以使用别的编码。
+
+2. 使用 Linux 中的 iconv 工具来对文件的编码进行转换：
+    ```bash
+    iconv -f utf8 -t utf-16 before.xml > after.xml
+    ```
+
+    源文件头部不需要注明编码（`encoding="..."`），其会自动识别。
+
+3. CTF 例题：[CSAWQual 2019]Web_Unagi
+
 ## 7. 补充
 
 1. 基于报错的 XXE 注入

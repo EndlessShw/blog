@@ -72,3 +72,124 @@ tags:
     ```
 
 3. todo：5.0.24 存在序列化口时存在反序列化利用。
+
+## 2. ThinkPHP6 相关漏洞
+
+### 2.1 ThinkPHP6 任意文件写入
+
+1. 漏洞版本：`6.0.0 <= ThinkPHP_Version <= 6.0.1`。
+
+2. 现象：Session 可控，Session 的内容如果是文件名的话会在 `项目名/runtime/session` 文件夹下创建  `sess_...` 的文件。
+
+3. 靶场：[GYCTF2020]EasyThinking
+
+4. 拿到源码后，寻找能够修改 Session 的地方：
+    ```php
+    public function search()
+    {
+        if (Request::isPost()){
+            # session() 方法会进行 session 内容的比较
+            if (!session('?UID'))
+            {
+                return redirect('/home/member/login');            
+            }
+            $data = input("post.");
+            $record = session("Record");
+            if (!session("Record"))
+            {
+                session("Record",$data["key"]);
+            }
+            else
+            {
+                $recordArr = explode(",",$record);
+                $recordLen = sizeof($recordArr);
+                if ($recordLen >= 3){
+                    array_shift($recordArr);
+                    session("Record",implode(",",$recordArr) . "," . $data["key"]);
+                    return View::fetch("result",["res" => "There's nothing here"]);
+                }
+            }
+            # 可以知道 session 来源于变量 $data
+            session("Record",$record . "," . $data["key"]);
+            return View::fetch("result",["res" => "There's nothing here"]);
+        }else{
+            return View("search");
+        }
+    }
+    ```
+
+    源码分析后，发现其 session 来自 `$data` 且要符合内容。
+
+5. 往上追溯 `$data` 的初次赋值，可以看到来自注册界面：
+    ```php
+    public function register()
+    {
+        if (Request::isPost()){
+            # 这里使用了 "post."，导致其会将请求包中的所有参数接收并存入数据库。这里就是 Session 设置的关键。
+            $data = input("post.");
+            if (!(new Auth)->validRegister($data)){
+                return "<script>alert(\"当前用户名已注册\");history.go(-1)</script>";
+            }
+            $data["password"] = md5($data["password"]);
+            $data["status"] = 0;
+            $res = User::create($data);
+            if ($res){
+                return redirect('/home/member/login');
+            }
+            return "<script>alert(\"注册失败\");history.go(-1)</script>";
+        }else{
+            return View("register");
+        }
+    }
+    ```
+
+    这里给出 `Input()` 的源代码：
+    ```php
+    (!function_exists('input')) {
+        /**
+         * 获取输入数据 支持默认值和过滤
+         * @param string $key     获取的变量名
+         * @param mixed  $default 默认值
+         * @param string $filter  过滤方法
+         * @return mixed
+         */
+        function input(string $key = '', $default = null, $filter = '')
+        {
+            if (0 === strpos($key, '?')) {
+                $key = substr($key, 1);
+                $has = true;
+            }
+    
+            if ($pos = strpos($key, '.')) {
+                // 指定参数来源
+                $method = substr($key, 0, $pos);
+                if (in_array($method, ['get', 'post', 'put', 'patch', 'delete', 'route', 'param', 'request', 'session', 'cookie', 'server', 'env', 'path', 'file'])) {
+                    $key = substr($key, $pos + 1);
+                    if ('server' == $method && is_null($default)) {
+                        $default = '';
+                    }
+                } else {
+                    $method = 'param';
+                }
+            } else {
+                // 默认为自动判断
+                $method = 'param';
+            }
+    
+            return isset($has) ?
+            request()->has($key, $method) :
+            request()->$method($key, $default, $filter);
+        }
+    ```
+
+6. PHP 官方默认设定的 Session 长度为 32 位：
+
+    > https://www.php.net/manual/zh/session.configuration.php#ini.session.sid-length
+
+    所以设置 Session 为文件名时，带上后缀长度也要满足 32 位。
+
+7. 具体解题过程详见：
+
+    > https://fanygit.github.io/2021/10/20/[GYCTF2020]EasyThinking%201/
+
+    这样有些步骤就解释的通了。

