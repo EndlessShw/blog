@@ -7,6 +7,7 @@ categories:
 tags:
 - EduSRC
 - SRC
+date: 2024-09-11 16:20:29
 ---
 
 # EduSRC 学习笔记
