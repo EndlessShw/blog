@@ -1244,14 +1244,3 @@ java.lang.Throwable exception;
 
 3. 这里需要注意的是，当在 DBUtils 中关闭连接 `close()` 之后，一定还要 `local.remove()` 移除键值对；
     因为 Tomcat 服务器有内置线程池，如果不删除，以后会重复使用以前的线程，从而导致会拿到已经 `close()` 后的 `Connection` 对象。
-
-
-
-
-
-
-
-
-
-
-

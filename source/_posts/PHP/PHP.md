@@ -1,5 +1,5 @@
 ---
-title: Basic_PHP
+title: PHP
 categories:
 - Front end
 - PHP

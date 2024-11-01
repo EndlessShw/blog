@@ -1,1 +1,1 @@
-python D:\blog\update.py -p "%1"
+python3.12 D:\blog\update.py -p "%1"

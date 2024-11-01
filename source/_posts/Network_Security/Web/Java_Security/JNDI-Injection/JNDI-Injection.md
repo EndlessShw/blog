@@ -49,7 +49,7 @@
     }
     ```
 
-4. 这里 JNDI 的底层还是走的 RMI 底层，因此 RMI 的相关漏洞，JNDI 也存在
+4. 这里 JNDI 的底层还是走的 RMI 底层，因此 RMI 的相关漏洞，JNDI 也存在。
 
 ### 1.3 `Reference` 类
 

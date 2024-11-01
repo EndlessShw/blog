@@ -39,6 +39,97 @@
             <version>4.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.29.2-GA</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.66</version>
+        </dependency>
+
+        <!-- 这里版本和 Hessian 保持一致吧 -->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>resin</artifactId>
+            <version>4.0.66</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.rometools/rome -->
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.11.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.24</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.xbean/xbean-naming -->
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-naming</artifactId>
+            <version>4.25</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.11</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>2.4.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.1.8.RELEASE</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-beans -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>4.1.8.RELEASE</version>
+        </dependency>
+
+
+
+        <!-- https://mvnrepository.com/artifact/rome/rome -->
+        <!-- <dependency> -->
+        <!--     <groupId>rome</groupId> -->
+        <!--     <artifactId>rome</artifactId> -->
+        <!--     <version>1.0</version> -->
+        <!-- </dependency> -->
+
+
+
         <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
         <!-- <dependency> -->
         <!--     <groupId>commons-collections</groupId> -->
