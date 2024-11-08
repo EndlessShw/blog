@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 /**
  * @author hasee
  * @version 1.0
- * @description: TODO
+ * @description: 创建注册中心
  * @date 2023/5/12 11:16
  */
 public class RMIServer {

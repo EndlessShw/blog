@@ -1,0 +1,75 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.17 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.17">
+  <diagram name="第 1 页" id="wJz072Y5yiNHRC675SkC">
+    <mxGraphModel dx="1874" dy="675" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HCeeV9B7WbnhnxXan16n-13" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" parent="1" vertex="1">
+          <mxGeometry x="-110" y="150" width="610" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;shape=link;" parent="1" source="HCeeV9B7WbnhnxXan16n-1" target="HCeeV9B7WbnhnxXan16n-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-4" value="作用等效&lt;br&gt;但非继承" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="HCeeV9B7WbnhnxXan16n-3" vertex="1" connectable="0">
+          <mxGeometry x="-0.0846" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-1" value="RPC Protocol" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="340" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;shape=link;strokeColor=none;" parent="1" source="HCeeV9B7WbnhnxXan16n-2" target="HCeeV9B7WbnhnxXan16n-8" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-2" value="RMI（JRMI）&lt;br&gt;Java API" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="530" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-6" value="LDAP" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="150" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="HCeeV9B7WbnhnxXan16n-8" target="HCeeV9B7WbnhnxXan16n-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-12" value="JRMP 是 JRMI 的实现协议" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="HCeeV9B7WbnhnxXan16n-10" vertex="1" connectable="0">
+          <mxGeometry x="-0.0423" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-8" value="JRMP&lt;br&gt;JRM Protocol" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="530" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-14" value="DNS" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-40" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-15" value="应用层协议" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="-90" y="170" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="HCeeV9B7WbnhnxXan16n-16" target="HCeeV9B7WbnhnxXan16n-14" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="450" />
+              <mxPoint x="20" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="HCeeV9B7WbnhnxXan16n-16" target="HCeeV9B7WbnhnxXan16n-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="HCeeV9B7WbnhnxXan16n-16" target="HCeeV9B7WbnhnxXan16n-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="450" />
+              <mxPoint x="590" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-16" value="JNDI&lt;br&gt;Java API（interface）" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="250" y="470" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HCeeV9B7WbnhnxXan16n-20" value="为这三个应用提供命名服务以查询数据和资源" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="180" y="418" width="260" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

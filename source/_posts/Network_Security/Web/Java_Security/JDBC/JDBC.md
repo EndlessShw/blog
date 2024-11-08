@@ -8,7 +8,7 @@ categories:
 tags:
 - Java
 - Serialization
-date: 2024-11-01 11:28:26
+date: 2024-11-01 11:32:55
 ---
 
 # JDBC Connection URL Attack

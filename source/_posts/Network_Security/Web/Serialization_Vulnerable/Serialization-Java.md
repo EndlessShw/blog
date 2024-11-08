@@ -1332,7 +1332,6 @@ date: 2024-10-21 15:25:52
 5. 最后看第三个方向，`_transletIndex` 的控制逻辑：
     ![image-20240928191142014](Serialization-Java/image-20240928191142014.png)
     可以看到，`_transletIndex` 是一个标记位，用于标记 `_class` 中继承了 `AbstractTranslet` 的类，否则默认为 `-1`。那么我们**该做的操作是将恶意类继承 `AbstractTranslet`。**
-    还需要注意的地方是，`_bytecodes` 不能为 `null`，不然走不到下面的逻辑，一般情况下是不为空的，为了保险期间的话，可以反射额外赋值。
 
 ### 8.2 新的 Chain - `TransformingComparator`
 
