@@ -1,5 +1,5 @@
 ---
-title: JDBC Connection URL Attack
+title: JNDI 注入
 categories:
 - Network_Security
 - Web

