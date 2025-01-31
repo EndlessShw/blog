@@ -14,7 +14,7 @@ import java.rmi.registry.Registry;
  * @date 2023/5/3 11:51
  */
 public class MyRemoteServer {
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) throws Exception {
         // 实例化自定义类
         IMyRemote myRemote = new MyRemoteImpl();
         // 通过 UnicastRemoteObject 将服务导出为远程服务接口

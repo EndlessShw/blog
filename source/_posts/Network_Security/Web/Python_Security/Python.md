@@ -7,7 +7,7 @@ categories:
 tags:
 - Network_Security
 - Python
-date: 2024-11-05 10:27:44
+date: 2025-01-07 16:32:44
 ---
 
 # Python 有关的安全
@@ -427,3 +427,40 @@ date: 2024-11-05 10:27:44
 
     > https://dummykitty.github.io/python/2023/05/29/python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8%E5%8E%9F%E7%90%86.html#%E9%80%83%E9%80%B8%E7%9B%AE%E6%A0%87
 
+## 6. Werkzeug 下的数据外带
+
+### 6.1 背景
+
+1. 在 Python Web RCE 下，有时需要进行一些回显，常见的方法包括但不限于反弹 Shell 或者针对不同漏洞下的特定回显方式，例如 SSTI 下可以添加内存马。
+
+2. 如果有时对方不出网，那就有点头疼了。在 2024 DAS 最后一战中的官方 wp 涉及如下内容：
+
+    > https://www.yuque.com/chuangfeimeiyigeren/eeii37/oxv3gaim7fr89ed2?singleDoc#Yk07Q
+    > ![image-20250107160200636](Python/image-20250107160200636.png)
+
+### 6.2 详细
+
+1. 先提及一下 Werkzeug 和 Flask 的关系：
+
+    > https://blog.csdn.net/lovedingd/article/details/106685914
+    > 都知道 Flask 是一个 web 框架，而且 Flask 是基于 werkzeug 开发的，那 werkzeug 是什么呢？
+    >
+    > Werkzeug 是一个 WSGI(Web Server Gateway Interface) 工具包，他可以作为一个 Web 框架的底层库。这里稍微说一下， werkzeug 不是一个 web 服务器，也不是一个 web 框架，而是一个**工具包**，官方的介绍说是**一个 WSGI 工具包**，它可以作为一个 Web 框架的底层库，因为它封装好了很多 Web 框架的东西，例如 Request，Response 等等。使用它可以减轻 web 框架开发工作量。我看过 werkzeug 的源码后发现，werkzeug 也实现了 WSGI 容器的功能，而且利用python/http/server.py 库实现了一个简易的 http 服务器。因此在调试的时候可以直接使用`app.run()` 把服务器给运行起来。
+    >
+    > WSGI简化了编写 Web app 的复杂度，使程序员不必关注底层的数据传输而专注于 Web 本身。框架则基于 WSGI 进一步抽象，用一个函数处理一个 URL。而 URL 与函数的绑定，称为路由(route)，而这些就交给 Web 框架来做了。Python Flask 的路由，是由装饰器实现的。
+
+    感觉像是 Spring 和 Servlet 的关系。
+
+2. 第一次在 DAS 中见到，不过其实之前就有师傅发现的相关的利用方法：
+
+    > https://xz.aliyun.com/t/15780?time__1311=GqjxnQGQDQO4l6zG7DyDIhmRTi%3DGCFQYAeD
+    > 原文中给出的 SSTI 下的 PoC：
+    > `{{g.pop.__globals__.__builtins__.setattr(g.pop.__globals__.sys.modules.werkzeug.serving.WSGIRequestHandler,"server_version",g.pop.__globals__.__builtins__.__import__('os').popen('whoami').read())}}`
+
+    如果有命令执行的权限，那么主要的代码如下：
+    ```python
+    import werkzeug
+    setattr(werkzeug.serving.WSGIRequestHandler, "server_version", '想要带出的数据')
+    ```
+
+    

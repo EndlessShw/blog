@@ -229,6 +229,7 @@ TODO：su18 提到的利用场景学习
 ## 5. Fastjson + JDBC 组合拳
 
 1. JDBC Connection URL Attack 的利用要求有 URL 的控制权，但是如果再向前一步，如果有**发起 JDBC 的控制权呢？**基于上述思路，将其和其它的反序列化漏洞结合，有时就可以绕过一些过滤。
+    通过 Fastjson 来发起 JDBC 连接，然后 JDBC 去连接恶意 MySQL 地址。
 2. 这里就和 Fastjson 反序列化漏洞结合。
 3. 客户端要有 mysql-connector-java 依赖、Fastjson 依赖和可以打的链依赖（这里以 CC 为例）。同时客户端有一个 Fastjson 反序列化口：
     ```java

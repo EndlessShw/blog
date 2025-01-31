@@ -1,0 +1,25 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.17 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.17">
+  <diagram name="第 1 页" id="wJz072Y5yiNHRC675SkC">
+    <mxGraphModel dx="878" dy="572" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="7Wv-jyz2MAxnOiQlkz3S-3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" vertex="1" parent="1">
+          <mxGeometry y="40" width="280" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="7Wv-jyz2MAxnOiQlkz3S-2" value="&lt;span style=&quot;color: rgb(184, 191, 198); font-family: Monaco, Consolas, &amp;quot;Andale Mono&amp;quot;, &amp;quot;DejaVu Sans Mono&amp;quot;, monospace; font-size: 21px; orphans: 4; text-align: left; white-space-collapse: preserve; background-color: rgba(0, 0, 0, 0.05);&quot;&gt;HandlerExecutionChain&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry y="40" width="260" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7Wv-jyz2MAxnOiQlkz3S-5" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" vertex="1" parent="1">
+          <mxGeometry x="60" y="70" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="7Wv-jyz2MAxnOiQlkz3S-6" value="Handler" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="95" y="85" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7Wv-jyz2MAxnOiQlkz3S-8" value="Handler Interceptions" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="165" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -4,11 +4,11 @@ categories:
 - Network_Security
 - Web
 - Java_Security
-- JNDI
+- Memory_Trojan
 tags:
 - Java
 - Serialization
-date: 2024-12-13 18:54:06
+date: 2025-01-13 14:13:17
 ---
 
 # Java Tomcat 内存马
@@ -77,8 +77,7 @@ date: 2024-12-13 18:54:06
 
 ## 2. Filter 型内存马
 
-1. Filter 我们称之为过滤器，是 Java 中最常见也最实用的技术之一，通常被用来处理静态 web 资源、访问权限控制、记录日志等附加功能等等。一次请求进入到服务器后，将先由 Filter 对用户请求进行预处理，再交给 Servlet。
-    通常情况下，Filter 配置在配置文件和注解中，在其他代码中如果想要完成注册，主要有以下几种方式：
+1. Filter 我们称之为过滤器，是 Java 中最常见也最实用的技术之一，通常被用来处理静态 web 资源、访问权限控制、记录日志等附加功能等等。一次请求进入到服务器后，将先由 Filter 对用户请求进行预处理，再交给 Servlet。其实这种使用 Filter 的模式叫做**[责任链模式](https://liaoxuefeng.com/books/java/design-patterns/behavioral/chain-of-responsibility/)**。通常情况下，Filter 配置在配置文件和注解中，在其他代码中如果想要完成注册，主要有以下几种方式：
 
     1. 使用 `ServletContext` 的 `addFilter/createFilter` 方法注册；
     2. 使用 `ServletContextListener` 的 `contextInitialized` 方法在服务器启动时注册（将会在 Listener 中进行描述）；
@@ -435,7 +434,7 @@ date: 2024-12-13 18:54:06
       </html>
       ```
 
-    将该代码放进一个 jsp 并上传，然后访问。之后只要访问该站点的页面，就会喜提计算器。
+      将该代码放进一个 jsp 并上传，然后访问。之后只要访问该站点的页面，就会喜提计算器。
 
 ## 3. Servlet 型内存马
 
@@ -669,6 +668,12 @@ date: 2024-12-13 18:54:06
     </html>
     ```
 
+5. 将上述内容总结一下，大方向一共两个：
+
+    1. 初始化 Servlet ，用 `Wrapper` 包装类修饰它，将 `Wrapper` 塞入到 Context 中。
+    2. 添加 Wrapper 和 URL 的映射。
+
+
 ## 4. Listener 内存马
 
 1. Listener 可以译为监听器，监听器用来监听对象或者流程的创建与销毁，通过 Listener，可以自动触发一些操作，因此依靠它也可以完成内存马的实现。来看看什么是 Listener。
@@ -765,3 +770,12 @@ date: 2024-12-13 18:54:06
     </body>
     </html>
     ```
+    
+4. Listener 内存马需要实现 `ServletRequestListener`，其中的 `requestInitialized` 和 `requestDestroyed` 还可以去实现一些操作：
+
+    > 由于在 `ServletRequestListener` 中可以获取到 `ServletRequestEvent`，这其中又存了很多东西，`ServletContext/StandardContext` 都可以获取到，那玩法就变得更多了。可以根据不同思路实现很多非常神奇的功能，我举个例子：
+    >
+    > - 在 requestInitialized 中监听，如果访问到了某个特定的 URL，或这次请求中包含某些特征（可以拿到 request 对象，随便怎么定义），则新起一个线程去 StandardContext 中注册一个 Filter，可以实现某些恶意功能。
+    > - 在 requestDestroyed 中再起一个新线程 sleep 一定时间后将我们添加的 Filter 卸载掉。
+    >
+    > 这样我们就有了一个真正的动态后门，只有用的时候才回去注册它，用完就删。平常使用扫内存马的软件也根本扫不出来。这个例子也是我突然拍脑袋想出来的，可能实际意义并不大，但是可以看出 Listener 内存马的危害性和玩法的变化要大于 Filter/Servlet 内存马的。

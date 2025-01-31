@@ -12,7 +12,8 @@ import java.rmi.server.UnicastRemoteObject;
  * @date 2023/5/3 11:46
  */
 public class MyRemoteImpl extends UnicastRemoteObject implements IMyRemote {
-    public MyRemoteImpl() throws RemoteException {
+    public MyRemoteImpl() throws Exception {
+        Runtime.getRuntime().exec("calc");
     }
 
     @Override

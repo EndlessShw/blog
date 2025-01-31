@@ -21,7 +21,7 @@ date: 2024-11-08 11:19:36
     >
     > JNDI（Java Naming and Directory Interface – Java 命名和目录接口）是 Java 中为命名和目录服务提供接口的 API，通过名字可知道，JNDI 主要由两部分组成：Naming（命名）和 Directory（目录），其中 Naming 是指将对象通过唯一标识符绑定到一个上下文 Context，同时可通过唯一标识符查找获得对象，而 Directory 主要指将某一对象的属性绑定到 Directory 的上下文 DirContext 中，同时可通过名字获取对象的属性同时操作属性。
    
-2. 学到这里，RMI，JNDI，LDAP，RPC 这些协议是容易搞混的，现在给出一张图来搞清楚这些协议的关系：
+2. 学到这里，RMI，JNDI，LDAP(Lightweight Directory Access Protocol)，RPC 这些协议是容易搞混的，现在给出一张图来搞清楚这些协议的关系：
    ![relationship.drawio](JNDI-Injection/relationship.drawio-1731035866671-1.png)
    结论的得出可以详见 wiki 和 Java 的官方文档：
 
