@@ -473,7 +473,7 @@ tags:
 
 ### 5.1 chain1 - `ObjectMapper.writeValueAsString()`
 
-1. 底层原理就是 Jackson 通过 `writeValueAsString` 将对象转为JSON字符串的时候，获取对象属性的时候会自动调用其 getter 方法。
+1. 底层原理就是 Jackson 通过 `writeValueAsString` 将对象转为 JSON 字符串的时候，获取对象属性的时候会自动调用其 getter 方法。
 2. 想到 getter，那么肯定就会想到那位经典的 sink - `TemplatesImpl.getOutputProperties`。
 3. 那现在的方向就是，找到一个类的 `readObject()`，它能够触发 Jackson 的序列化并序列化任意类。
 

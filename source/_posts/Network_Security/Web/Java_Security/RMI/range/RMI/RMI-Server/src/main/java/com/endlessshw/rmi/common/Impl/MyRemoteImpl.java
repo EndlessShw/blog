@@ -8,17 +8,22 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author hasee
  * @version 1.0
- * @description: 共享接口的实现类
+ * @description: 服务端对于共享接口的实现类
  * @date 2023/5/3 11:46
  */
 public class MyRemoteImpl extends UnicastRemoteObject implements IMyRemote {
     public MyRemoteImpl() throws Exception {
-        Runtime.getRuntime().exec("calc");
+        // Runtime.getRuntime().exec("calc");
     }
 
     @Override
     public void saySth(String sentence) {
         System.out.println(sentence);
+    }
+
+    @Override
+    public void saySth(Object obj) throws RemoteException {
+
     }
 
     @Override

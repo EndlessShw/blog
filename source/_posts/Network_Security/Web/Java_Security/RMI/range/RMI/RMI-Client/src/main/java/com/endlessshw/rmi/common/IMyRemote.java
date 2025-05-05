@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
  */
 public interface IMyRemote extends Remote {
     void saySth(String sentence) throws RemoteException;
+    void saySth(Object obj) throws RemoteException;
     void getObject(Object obj) throws RemoteException;
     void getObject(String Str) throws RemoteException;
 

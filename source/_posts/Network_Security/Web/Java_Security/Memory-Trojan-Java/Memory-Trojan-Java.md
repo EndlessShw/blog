@@ -4,7 +4,7 @@ categories:
 - Network_Security
 - Web
 - Java_Security
-- JNDI
+- Memory_Trojan
 tags:
 - Java
 - Serialization

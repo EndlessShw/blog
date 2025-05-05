@@ -7,7 +7,7 @@ categories:
 - Memory_Trojan
 tags:
 - Java
-- Serialization
+- Memory_Trojan
 date: 2025-02-09 15:51:14
 ---
 
