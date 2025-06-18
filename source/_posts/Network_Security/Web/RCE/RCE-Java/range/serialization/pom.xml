@@ -105,19 +105,19 @@
             <version>2.4.3</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>4.1.8.RELEASE</version>
-        </dependency>
+        <!-- &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework/spring-core &ndash;&gt; -->
+        <!-- <dependency> -->
+        <!--     <groupId>org.springframework</groupId> -->
+        <!--     <artifactId>spring-core</artifactId> -->
+        <!--     <version>4.1.8.RELEASE</version> -->
+        <!-- </dependency> -->
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-beans -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>4.1.8.RELEASE</version>
-        </dependency>
+        <!-- &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework/spring-beans &ndash;&gt; -->
+        <!-- <dependency> -->
+        <!--     <groupId>org.springframework</groupId> -->
+        <!--     <artifactId>spring-beans</artifactId> -->
+        <!--     <version>4.1.8.RELEASE</version> -->
+        <!-- </dependency> -->
 
 
 

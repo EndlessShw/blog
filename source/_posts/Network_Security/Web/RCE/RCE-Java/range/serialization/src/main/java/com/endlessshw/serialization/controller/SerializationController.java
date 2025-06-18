@@ -1,6 +1,7 @@
 package com.endlessshw.serialization.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
@@ -16,8 +17,8 @@ import java.util.Base64;
  */
 @RestController
 public class SerializationController {
-    @GetMapping("/serialization")
-    public String Serialization() {
+    @GetMapping(value = "/serialization")
+    public String Serialization(@RequestParam("data") String data) {
         // 模拟反序列化靶场
         ObjectInputStream objectInputStream = null;
         try {
@@ -25,7 +26,7 @@ public class SerializationController {
             // File serialiation = serialiation();
             // objectInputStream = new ObjectInputStream(Files.newInputStream(serialiation.toPath()));
             // 改用 base64 字符流
-            objectInputStream = new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode("rO0ABXNyACljb20uZW5kbGVzc3Nody5zZXJpYWxpemF0aW9uLnV0aWwuUGF5bG9hZIFmW4KaHkLyAgAAeHA=")));
+            objectInputStream = new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(data)));
             // 靶场调用了 readObject()
             return objectInputStream.readObject().toString();
         } catch (IOException | ClassNotFoundException e) {

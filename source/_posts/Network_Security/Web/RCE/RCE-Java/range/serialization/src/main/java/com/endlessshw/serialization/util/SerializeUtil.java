@@ -42,6 +42,7 @@ public class SerializeUtil {
         // 模拟反序列化靶场
         ObjectInputStream objectInputStream = null;
         try {
+            System.out.println(serialize);
             objectInputStream = new ObjectInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(serialize)));
             // 靶场调用了 readObject()
             objectInputStream.readObject();
