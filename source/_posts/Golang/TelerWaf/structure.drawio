@@ -1,0 +1,197 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="第 1 页" id="j_cH0wuM3dGoAae94xuw">
+    <mxGraphModel dx="2040" dy="1997" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+          <mxGeometry x="160" y="40" width="840" height="830" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-2" value="TelerWaf 结构体" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="280" y="240" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-3" value="opt Option 配置类" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="280" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-5" value="out *os.File 用于日志文件输出" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="340" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-6" target="S9yQ4uMvodtPpfYLsx0Y-14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-6" value="threat *Threat 存储威胁数据库等相关信息" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="400" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-8" value="wlPrograms []*vm.Program 白名单 DSL" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="520" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-9" value="cache *cache.Cache 缓存系统" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="585" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-7" value="handler http.Handler 拦截后的 HTTP Handler" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="460" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-10" value="caller string TelerWaf 调用者的包名&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="650" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="1dt4qX5Q25qzPC-aJbmY-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="740.0000000000005" as="sourcePoint" />
+            <mxPoint x="1040" y="400" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1040" y="740" />
+              <mxPoint x="1040" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-11" value="env *dsl.Env 存放 DSL 相关的配置" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="720" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-12" target="1dt4qX5Q25qzPC-aJbmY-33" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-12" value="falcoSidekick falcoSidekick 和云安全相关" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="790" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-14" target="1dt4qX5Q25qzPC-aJbmY-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-14" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+          <mxGeometry x="560" y="80" width="400" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-15" value="Threat" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="730" y="80" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-16" value="excludes map[threat.Threat]bool 定义哪些攻击类型被排除。threat.Threat 为 int8。" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="120" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-17" value="data map[threat.Threat]string 从配置文件读取的，各个内置攻击监测模块的规则来源" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="180" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-21" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="240" width="320" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-22" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=light-dark(#008a00, #3cd33c);fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+          <mxGeometry x="600" y="240" width="320" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-18" value="badCrawler []*regexp.Regexp 爬虫判断 UA 头的，编译后的正则表达式。" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="250" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-19" value="cve *fastjson.Value cve 规则的 json 数据" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="310" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="S9yQ4uMvodtPpfYLsx0Y-20" value="cwa *cwa CommonWebAttack 的结构体（其中也包含类似 cve 规则 json）" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="370" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="1080" y="240" width="400" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-3" value="DSL" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1250" y="240" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-4" value="Env 为 DSL 的环境。为 DSL 添加额外函数，同时存放当前请求的信息以及目前指定的威胁种类（分析时）。" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="280" width="320" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-6" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="1080" y="-160" width="400" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-7" value="threat.Threat&lt;br&gt;为上层提供 threat 类型以及攻击规则来源" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="-160" width="320" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-8" value="Threat 类，定义攻击类型（Int8）" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="-105" width="320" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-14" value="get.go，为上层提供：从配置文件获取并解析攻击规则等。" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="-25" width="320" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-15" value="verify.go 验证本地威胁库内容是否与远程仓库同步。提供 MD5 检测。" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="55" width="320" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-17" value="compile.go 包装&amp;nbsp;expr.Complie&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="360" width="320" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-18" value="run.go 包装 expr.Run，同时更新 Env 的一些数据等。" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1120" y="445" width="320" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-20" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" parent="1" vertex="1">
+          <mxGeometry x="560" y="500" width="400" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-22" value="各种结构体和工具类等" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="600" y="510" width="320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-23" value="cwa.go" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="710" y="555" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-26" value="cve.go" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="840" y="555" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-21" value="handler.go" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="580" y="555" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-7" target="1dt4qX5Q25qzPC-aJbmY-21" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-19" target="1dt4qX5Q25qzPC-aJbmY-26" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-20" target="1dt4qX5Q25qzPC-aJbmY-23" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-32" value="analyze 分析模块" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="580" y="625" width="360" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-33" value="TODO" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" parent="1" vertex="1">
+          <mxGeometry x="1080" y="650" width="400" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="1dt4qX5Q25qzPC-aJbmY-34" value="falcosidekick" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="1250" y="660" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="_2hHmAbwq9rkSAuVHlLg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="160" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="160" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-1" value="Waf.Handler" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="395" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-3" value="telerWaf.analyzeRequest()" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="-45" y="405" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-4" value="telerWaf.postAnalyze()" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="-30" y="480" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.989;entryY=0.694;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.001;exitY=0.528;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="S9yQ4uMvodtPpfYLsx0Y-1" target="_2hHmAbwq9rkSAuVHlLg-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-130" y="660" as="sourcePoint" />
+            <mxPoint x="110" y="660" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="130" y="478" />
+              <mxPoint x="130" y="478" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-8" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="_2hHmAbwq9rkSAuVHlLg-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-200" y="280" as="sourcePoint" />
+            <mxPoint x="-200" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-9" value="一次 HTTP 请求" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="-255" y="250" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-10" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="_2hHmAbwq9rkSAuVHlLg-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-220" y="660" as="sourcePoint" />
+            <mxPoint x="-200" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_2hHmAbwq9rkSAuVHlLg-12" value="正常业务 handler.ServeHTTP" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-300" y="585" width="200" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
