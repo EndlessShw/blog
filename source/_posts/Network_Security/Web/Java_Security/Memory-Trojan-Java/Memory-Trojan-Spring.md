@@ -4,7 +4,7 @@ categories:
 - Network_Security
 - Web
 - Java_Security
-- MemoryTrojan
+- Memory_Trojan
 tags:
 - Network_Security
 - Java

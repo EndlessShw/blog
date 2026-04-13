@@ -91,7 +91,7 @@ tags:
                    print(result)
                    break
        ```
-
+       
        结果如下：
        ![image-20240125150243238](Hard_Socnet2/image-20240125150243238.png)
 
@@ -122,9 +122,9 @@ tags:
        ```
 
        发现它有一个 suid 的文件：add_record。
-
+       
        ![image-20240125152714322](Hard_Socnet2/image-20240125152714322.png)
-
+       
        查看文件属性：`file add_record`：
        ![image-20240125153006490](Hard_Socnet2/image-20240125153006490.png)
        是一个可执行程序。
