@@ -5268,3 +5268,50 @@ date: 2026-04-13 16:39:36
     }
     ```
 
+### 10.2 下一个更大元素 I
+
+1. 还想着多次遍历，但他是每日温度套了个壳，每日温度求下标，它为了具体数值，所以可以用额外的 `HashMap` 来存放。
+
+2. https://programmercarl.com/0503.%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%A4%A7%E5%85%83%E7%B4%A0II.html#%E7%AE%97%E6%B3%95%E5%85%AC%E5%BC%80%E8%AF%BE
+
+3. 代码：
+    ```java
+    class Solution {
+        public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+            int[] result = new int[nums1.length];
+            // 新进入的元素和栈顶元素比较，如果比它大，则里面的元素出栈，同时更新其数组
+            Deque<Integer> stack = new ArrayDeque<>();
+            // 用于记录 nums2 中，元素的值与下一个更大元素的对应关系
+            Map<Integer, Integer> valueIndexMap = new HashMap<>();
+            // 按照每日温度的思想，对 nums2 进行操作
+            for (int i = 0; i < nums2.length; i++) {
+                while (stack.size() != 0) {
+                    // 获取栈顶值
+                    Integer topValue = stack.getLast();
+                    if (nums2[i] < topValue) {
+                        stack.addLast(nums2[i]);
+                        break;
+                    } else {
+                        stack.pollLast();
+                        valueIndexMap.put(topValue, nums2[i]);
+                    }
+                }
+                // 如果栈为空，则直接入栈
+                if (stack.size() == 0) {
+                    stack.addLast(nums2[i]);
+                }
+            }
+            // 如果结束之后栈不为空，则将剩余的元素全部出栈，且其对应的内容为 -1
+            while (stack.size() != 0) {
+                Integer topValue = stack.pollLast();
+                valueIndexMap.put(topValue, -1);
+            }
+            for (int i = 0; i < nums1.length; i++) {
+                result[i] = valueIndexMap.get(nums1[i]);
+            }
+    
+            return result;
+        }
+    }
+    ```
+
