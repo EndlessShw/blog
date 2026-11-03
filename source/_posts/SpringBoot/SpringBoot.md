@@ -1,5 +1,6 @@
 ---
 date: 2024-04-30 13:53:33
+title: "SpringBoot 快速入门"
 ---
 # SpringBoot
 

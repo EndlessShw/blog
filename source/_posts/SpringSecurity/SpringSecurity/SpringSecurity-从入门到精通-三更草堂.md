@@ -1,5 +1,6 @@
 ---
 date: 2024-01-04 20:24:53
+title: "SpringSecurity从入门到精通"
 ---
 # SpringSecurity从入门到精通
 

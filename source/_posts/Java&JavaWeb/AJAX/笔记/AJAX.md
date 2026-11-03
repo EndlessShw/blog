@@ -1,5 +1,6 @@
 ---
 date: 2024-04-30 13:53:33
+title: "AJAX（Asynchronous Javascript And Xml）"
 ---
 # AJAX（Asynchronous Javascript And Xml）
 

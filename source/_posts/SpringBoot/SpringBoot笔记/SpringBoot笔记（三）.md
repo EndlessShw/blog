@@ -1,5 +1,6 @@
 ---
 date: 2024-04-30 13:53:33
+title: "Redis数据库"
 ---
 ![点击查看源网页](SpringBoot笔记（三）//gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic4.zhimg.com%2Fv2-054d8ff6135b3638aca543eff7424f98_1200x500.jpg&refer=http%3A%2F%2Fpic4.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644500043&t=72a4f8ecfca9ff5a2a0b3896edef4be7)
 

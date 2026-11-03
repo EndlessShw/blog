@@ -1,5 +1,6 @@
 ---
 date: 2024-04-30 13:53:33
+title: "Linux操作系统与项目部署"
 ---
 ![点击查看图片来源](SpringBoot笔记（五）//gimg2.baidu.com/image_search/src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20171116%2F4f98ec55839b434cba335319b5ebf963.jpeg&refer=http%3A%2F%2F5b0988e595225.cdn.sohucs.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645350734&t=099b0e4fb640617498cc40939e7e2070)
 

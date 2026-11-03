@@ -1,5 +1,6 @@
 ---
 date: 2024-01-04 20:24:53
+title: "WebLogic 中间件漏洞"
 ---
 # WebLogic 中间件漏洞
 
