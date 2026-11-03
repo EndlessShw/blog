@@ -1,1 +1,3 @@
-python D:\blog\update.py -p "%1"
+@echo off
+python "%~dp0update.py" -p "%~1"
+exit /b %errorlevel%

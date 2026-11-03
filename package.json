@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "hexo generate",
+    "build": "node tools/prepare-git-history.js && hexo generate",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo server"
+    "server": "hexo server",
+    "dates:preview": "node tools/article-timestamps.js",
+    "test:dates": "node --test test/article-timestamps/content.test.js test/article-timestamps/history.test.js test/article-timestamps/hexo.test.js"
   },
   "hexo": {
     "version": "7.0.0"
