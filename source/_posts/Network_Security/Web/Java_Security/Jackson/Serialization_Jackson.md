@@ -8,6 +8,7 @@ categories:
 tags:
 - Java
 - Serialization
+date: 2024-11-01 11:36:41
 ---
 
 # Jackson 反序列化漏洞

@@ -1,3 +1,6 @@
+---
+date: 2024-04-30 13:53:33
+---
 # AJAX（Asynchronous Javascript And Xml）
 
 ## 传统请求及缺点

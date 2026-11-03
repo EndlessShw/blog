@@ -7,6 +7,7 @@ categories:
 tags:
 - Network_Security
 - Python
+date: 2025-05-05 21:59:03
 ---
 
 # Python Audit Hook 绕过探究与总结

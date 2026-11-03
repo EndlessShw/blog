@@ -1,3 +1,6 @@
+---
+date: 2024-04-30 13:53:33
+---
 ![点击查看源网页](SpringBoot笔记（1） - 基本核心内容//gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg-blog.csdnimg.cn%2Fimg_convert%2F174788b2ec1d828d85a0a7ac65bea2cd.png&refer=http%3A%2F%2Fimg-blog.csdnimg.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644064714&t=46bead84c9b2fb6e0b65fd4afdaf805e)
 
 # SpringBoot一站式开发

@@ -1,3 +1,6 @@
+---
+date: 2024-01-04 20:24:53
+---
 # Cobalt Strike DNS Beacon 的使用和原理
 
 ## 1. DNS木马

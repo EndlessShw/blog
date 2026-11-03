@@ -8,6 +8,7 @@ categories:
 tags:
 - Network_Security
 - Java
+date: 2024-01-04 20:24:53
 ---
 
 # RMI （Remote Method Invocation）反序列化漏洞
