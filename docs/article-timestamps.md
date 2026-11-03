@@ -117,3 +117,7 @@ Fluid 的默认优先级 10 过滤器会保存文章列表，因此日期必须�
 ## 2026-11-04 发布前兼容验证
 
 保留仓库原有依赖和两种锁文件，仅合入 build/preview/test 脚本。以 HEAD 的 package-lock.json 在隔离克隆执行 npm ci --ignore-scripts，实际 Hexo 7.1.1、hexo-renderer-marked 6.2.0 / Marked 4.3.0、Fluid 1.9.7 下 16/16 测试通过，全站构建成功（124 篇文章，1368 个输出文件；此隔离环境不含本地忽略文件或子模块说明）。解析器使用跨版本 Lexer/walkTokens 接口；htmlparser2 从 Hexo 声明的 hexo-util 依赖链解析，不要求博客根目录直接声明 hexo-util。没有为本次发布升级依赖或重写锁文件。
+
+## 2026-11-04 Vercel 浅克隆修正
+
+首次生产构建确认 Vercel 的浅克隆没有 origin，历史预检按设计失败，未替换原有站点。构建入口现读取标准 package.json repository.url；有 origin 时沿用，否则使用显式源仓库 URL，只获取当前 HEAD 对应历史，不切换 HEAD、不添加远程或拉取工作区。已添加无 origin 浅克隆回归场景，仍不允许回退到文件时间。

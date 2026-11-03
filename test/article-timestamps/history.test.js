@@ -100,6 +100,12 @@ test('浅克隆补全不改 HEAD；离线失败或无 .git 明确报错', async 
   clone.git(['remote', 'add', 'origin', remote]);
   await assert.rejects(prepareHistory(clone.root, { fetch: false }), /历史不完整/);
   assert.equal(await prepareHistory(clone.root), head); assert.equal(clone.git(['rev-parse', '--is-shallow-repository']), 'false');
+  const withoutOrigin = fixture(t);
+  withoutOrigin.git(['fetch', '--depth=1', remote, 'main']); withoutOrigin.git(['checkout', '--detach', 'FETCH_HEAD']);
+  await assert.rejects(prepareHistory(withoutOrigin.root), /浅克隆缺少 origin/);
+  assert.equal(await prepareHistory(withoutOrigin.root, { repositoryUrl: remote }), head);
+  assert.equal(withoutOrigin.git(['rev-parse', '--is-shallow-repository']), 'false');
+  assert.equal(withoutOrigin.git(['remote']), '');
   clone.git(['remote', 'set-url', 'origin', 'file:///unavailable/blog.git']);
   assert.equal(await prepareHistory(clone.root, { fetch: false }), head); // full history works offline
   const offline = fixture(t);
